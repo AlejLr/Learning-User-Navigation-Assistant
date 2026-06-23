@@ -1,20 +1,30 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
-from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI()
+from app.api.routes import router
+from app.services import ingestion
 
-class QueryRequest(BaseModel):
-    question: str
-    mode: str | None = "visitor"
-    
-class QueryResponse(BaseModel):
-    answer: str
-    
-@app.post("/query", response_model=QueryResponse)
-def query(req: QueryRequest):
-    # TODO: wire retrieval + LLM here
-    return QueryResponse(answer=f"[{req.mode} mode] Placeholder answer for: {req.question}")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    ingestion.ingest()
+    yield
+
+
+app = FastAPI(title="LUNA Portfolio Assistant", lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(router)
+
 
 @app.get("/health")
-def health():
+async def health():
     return {"status": "ok"}
