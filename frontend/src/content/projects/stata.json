@@ -1,0 +1,40 @@
+{
+  "slug": "stata",
+  "title": "Dutch Housing Hedonic Pricing (1995–2000)",
+  "status": "completed",
+  "stub": false,
+  "category": "project",
+  "tags": ["Data Science", "Analytics", "Econometrics", "Completed", "Solo project", "Stata"],
+  "cardSummary": "Econometrics project modeling Dutch house prices with progressive OLS specifications, robust SEs, and time/region effects to quantify how structure, quality, and location drive value.",
+  "hero": {
+    "description": "Econometrics study of how structural, locational, and temporal attributes explain house prices in the Netherlands. The project builds a progressive hedonic OLS framework on a large transaction dataset, balancing statistical performance with economic interpretability.",
+    "kpis": [
+      { "label": "Raw dataset", "value": "~630k transactions" },
+      { "label": "Final sample", "value": "~130k cleaned" },
+      { "label": "Model progression", "value": "R² 0.45 → 0.77" },
+      { "label": "Interpretation model", "value": "OLS - Model 4 (R² ≈ 0.70)" },
+      { "label": "Project outcome", "value": "Final 9.0/10 (+ bonus)" }
+    ]
+  },
+  "links": [
+    { "label": "Read Full Report (PDF)", "url": "/assets/Report_Lopez_Ruiz_Alejandro.pdf" }
+  ],
+  "sections": [
+    {
+      "heading": "What this project shows",
+      "body": "- **Hands-on experience with Stata** on a large, real-world housing dataset (hundreds of thousands of transactions).\n- **End-to-end data preparation**: outlier handling, log transformations, encoding of categorical variables, and construction of quality, spatial, and temporal features.\n- **Progressive model building** from a simple structural baseline to richer specifications with quality, location, and time fixed effects.\n- **Clear economic interpretation** of coefficients and model comparisons, grounded in the housing economics literature.\n- **High academic performance**: graded 9.0/10 with an additional bonus point for the fixed-effects specification and interpretation."
+    },
+    {
+      "heading": "Execution highlights",
+      "body": "- **Space & quality premiums:** floor area, plot size, volume, number of rooms, and maintenance quality all have positive and highly significant effects on log price, with volume and maintenance standing out as particularly influential drivers.\n- **Urbanization & region matter:** more urban areas and provinces like Utrecht and Noord-Holland command higher price levels than less urban regions, consistent with agglomeration and accessibility effects.\n- **Market dynamics:** longer time-on-market (log duration) is associated with lower realized prices, while year dummies capture a steady late-1990s housing boom in the Netherlands.\n- **Model choice:** Model 4 is selected as the main interpretative model: it achieves strong explanatory power without relying on an excessive number of regional dummies, making it suitable for communicating results to non-technical stakeholders."
+    },
+    {
+      "heading": "How it was built",
+      "body": "- **Data preparation:** log-transformations for skewed continuous variables (price, area, volume, plot size), trimming extreme outliers, and constructing composite variables such as maintenance quality and land intensity.\n- **Variable design:** structural attributes (size, rooms, home type), quality attributes (maintenance, sheds, land use), spatial context (urbanization, province dummies), and temporal dynamics (year and construction-period dummies, listing duration).\n- **Model progression:** five OLS specifications with robust standard errors, gradually adding quality, locational, and temporal blocks to quantify their incremental contribution to R² and to price formation.\n- **Robustness & literature alignment:** choices of transformations, variables, and fixed effects are motivated by classic hedonic pricing literature and recent Dutch housing studies, and checked via descriptive plots and residual behavior.\n\nCode and do-files are not publicly shared at the request of the course coordinator, but can be provided to recruiters on request."
+    },
+    {
+      "heading": "Limitations & next steps",
+      "body": "- **Missing neighborhood detail:** the model cannot directly capture micro-spatial features such as proximity to schools, transit, or environmental amenities, which likely explain part of the remaining variation.\n- **Cross-sectional design:** results are associative rather than causal; panel data and richer temporal information would allow stronger identification of long-run price dynamics and policy effects.\n- **Selection effects:** the dataset includes only completed transactions; future work could explicitly address potential selection bias from unsold or withdrawn listings.\n- **Future extensions:** integrate neighborhood-level and environmental indicators, explore spatial models, and test alternative functional forms (e.g. more flexible non-linear terms for land and plot size)."
+    }
+  ]
+}

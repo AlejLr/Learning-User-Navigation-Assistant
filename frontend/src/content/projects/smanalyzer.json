@@ -1,0 +1,55 @@
+{
+  "slug": "smanalyzer",
+  "title": "Marketing Social Media Analyzer",
+  "status": "completed",
+  "stub": false,
+  "category": "project",
+  "tags": ["AI / ML", "NLP", "Data Science", "Analytics", "Business / Marketing", "Dashboard", "Completed", "Solo project", "Python", "Streamlit", "Docker"],
+  "cardSummary": "Multi-language social listening dashboard: scrapes Mastodon posts, translates them, and runs sentiment, emotion, and toxicity analysis for marketing-style insights.",
+  "hero": {
+    "description": "From keyword to insight: a social-media-powered NLP pipeline with translation, emotions, and BI-style analytics, designed and implemented end-to-end as a solo project.",
+    "kpis": [
+      { "label": "Useful insight rate", "value": "≈ 40-50% of fetched posts" },
+      { "label": "Translated share", "value": "≈ 15-30% of posts" },
+      { "label": "Languages detected", "value": "> 20 unique" }
+    ]
+  },
+  "links": [
+    { "label": "Live Demo", "url": "https://social-media-emotion-analysis-dashboard-phxhwfgrgfnzysytr8nhqc.streamlit.app/" },
+    { "label": "GitHub Repo", "url": "https://github.com/AlejLr/Social-Media-Emotion-Analysis-Dashboard" }
+  ],
+  "sections": [
+    {
+      "heading": "Project overview",
+      "body": "The Marketing Social Media Analyzer is a multi-language social listening dashboard built to support marketing and strategy teams. It collects Mastodon posts for a given keyword, detects language, translates when needed, runs sentiment, emotion, and toxicity models, and presents the results in an interactive, BI-style Streamlit UI.\n\nThe project is intentionally product-shaped: it takes a vague task (\"understand what people feel about a topic\") and turns it into a repeatable workflow. It streamlines primary market research, makes analysis nearly instantaneous once data is fetched, and is architected so that new models or platforms (X, Reddit, Threads, LinkedIn) can be plugged in with minimal if any code changes.\n\n- **Target users:** marketing analysts, brand teams, product owners.\n- **Goal:** go from raw posts to actionable sentiment/emotion insights in a few clicks.\n- **Ownership:** first long-form solo project — ideation, architecture, NLP, and UX done solo."
+    },
+    {
+      "heading": "Cloud demo vs full local version",
+      "body": "Running advanced multi-language NLP is expensive and slow to cold-start in the cloud. To balance cost, reliability, and UX, the public demo is intentionally lightweight:\n\n- **Cloud demo:** read-only exploration of fetched demo datasets (e.g. `demo_ai_300`, `demo_advanced_ai_300`, `demo_advanced_iphone_300`, `demo_advanced_microsoft_300`).\n- **Local full features:** live scraping, translation, and heavy BERT models run on your own machine.\n- **Hybrid inference:** the app prefers the Hugging Face Inference API when a token is present and falls back to local models if not.\n\nThis design handles pragmatic production trade-offs: the hosted demo showcases UX and the pipeline, while the local version shows full engineering capability without incurring high API or compute costs."
+    },
+    {
+      "heading": "How it works",
+      "body": "1. **User configures a query:** keyword (e.g. \"AI\", \"ChatGPT\", \"iPhone\"), number of posts (20-300), and minimum likes.\n2. **Mastodon scraper** pulls posts via the official API until the requested count is reached.\n3. **Language detection & translation:** `langdetect` tags the language; non-English text is translated to English via Helsinki-NLP (`Helsinki-NLP/opus-mt-mul-en`) using the Hugging Face Inference API, or a local model if no API token is provided.\n4. **Baseline sentiment:** VADER computes a fast sentiment score for every translated post.\n5. **Advanced NLP (optional):** BERT sentiment, emotion, and toxicity models enrich each post with higher-quality labels.\n6. **Dashboard:** a Streamlit app aggregates KPIs, distributions, and BI-style takeaways; everything remains fully interactive.\n\n- **Max posts per run:** 300 (min 20).\n- **Useful insight rate:** roughly 40-50% of posts remain after cleaning and filtering.\n- **HF API impact:** fetching and processing time reduced by roughly 60% compared to local-only runs (when CUDA isn't available locally)."
+    },
+    {
+      "heading": "NLP models and resilience",
+      "body": "The core of the analyzer is a modular NLP pipeline that can run either using the Hugging Face Inference API or entirely locally. This makes the system resilient and accessible on a wide range of machines.\n\n- **Language detection:** `langdetect`.\n- **Translation:** `Helsinki-NLP/opus-mt-mul-en` via HF Inference API, with a local translation pipeline fallback.\n- **Baseline sentiment:** VADER (`vaderSentiment`).\n- **BERT sentiment:** `cardiffnlp/twitter-roberta-base-sentiment-latest`.\n- **Emotions:** `joeddav/distilbert-base-uncased-go-emotions-student`.\n- **Toxicity:** `unitary/unbiased-toxic-roberta`.\n\nAll transformer models are wired to use the Hugging Face Inference API when a token is available, and fall back to local Hugging Face pipelines otherwise — keeping the demo cheap while guaranteeing advanced analysis is still possible offline or on CUDA/CPU."
+    },
+    {
+      "heading": "Dashboard and UX",
+      "body": "The Streamlit dashboard is designed to feel like a lightweight BI tool rather than a raw model demo. All views are interactive: filters adjust the KPIs, plots, and sample posts in real time.\n\n- **KPI panel:** total posts (after cleaning), translated share, languages detected, toxicity rate, average sentiment.\n- **Sentiment distribution:** positive/neutral/negative split, with both VADER and BERT-based sentiment.\n- **Language distribution:** bar chart of detected languages and translation volume.\n- **Time series volume:** volume of posts over time for temporal context.\n- **Toxicity overview:** share of posts flagged toxic, top toxicity labels.\n- **Emotion breakdown:** dominant emotions (e.g., joy, anger, fear, excitement) across posts.\n- **Top words & topics:** frequency-based topic hints, with BERTopic-style modeling planned for v3.\n- **Sample posts:** positive vs negative examples for qualitative reading.\n- **BI insights block:** auto-generated takeaways summarizing the overall sentiment/emotion landscape."
+    },
+    {
+      "heading": "What this project shows",
+      "body": "- End-to-end NLP product thinking: from idea and requirements to UX, models, and deployment.\n- Modular, scalable Python design that can absorb new models and platforms with minimal changes.\n- Data engineering skills: scraping, ETL, translation pipeline, caching, and schema design.\n- BI storytelling: turning raw sentiment/emotion outputs into high-level marketing insights.\n- Cloud deployment and pragmatic DX trade-offs (demo vs full local capabilities)."
+    },
+    {
+      "heading": "Challenges and trade-offs",
+      "body": "- **API variability & rate limits:** solved by resilient HF calls, retries, and local fallbacks when API use is not available or desirable.\n- **Cloud computing costs:** free or low cost tiers limited the demo's scalability and required careful resource management.\n- **Language & encoding edge cases:** robust text cleaning (URL/hashtag removal, normalization) and conservative handling of unknown languages.\n- **Streamlit session problems:** used a session-based architecture and static demo datasets in the cloud to avoid DB lag and state issues.\n- **Multi-model pipeline:** unified BERT sentiment, emotions, and toxicity into a single, configurable enrichment function."
+    },
+    {
+      "heading": "Future improvements (v3 and beyond)",
+      "body": "- GPU-backed deployment (GCP/AWS) for enabling real-time fetching.\n- Topic modelling (e.g., BERTopic) for automatic topic discovery.\n- Per-language or per-country breakdowns (when location metadata is available).\n- Exportable PDF / PPTX reports from BI takeaways.\n- Multi-platform support (X, Reddit, Threads, LinkedIn) when APIs are accessible."
+    }
+  ]
+}

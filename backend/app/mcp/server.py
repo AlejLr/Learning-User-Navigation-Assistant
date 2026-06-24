@@ -18,9 +18,9 @@ mcp = FastMCP("LUNA Portfolio Tools")
 @mcp.tool()
 def project_metadata(project_name: str) -> dict:
     """
-    Get structured metadata about one of Alejandro's projects or background.
-    Use this when the user asks about a specific project, skill set, or background detail.
-    Valid inputs: dsv, pepadb, marketing, esg, ecosim, cv, skills.
+    Get structured metadata about one of Alejandro's projects.
+    Use this when the user asks about a specific project.
+    Valid inputs: sdg, smanalyzer, routeguesser, stata, luna, pepadb, esg, ecosim.
     """
     return get_project_metadata(project_name)
 

@@ -1,0 +1,44 @@
+{
+  "slug": "sdg",
+  "title": "SDG Challenge — DSV Electric Fleet Charging",
+  "status": "completed",
+  "stub": false,
+  "category": "project",
+  "tags": ["Analytics", "Business / Marketing", "Data Science", "Completed", "Group project"],
+  "cardSummary": "Led a student team on a sustainability and operations challenge for DSV's electric truck fleet. The wave-based charging workflow we proposed was implemented by DSV, reducing estimated operational costs by approximately 80%.",
+  "hero": {
+    "description": "A real-world sustainability and operations challenge for DSV, one of the world's largest logistics companies. Our team designed and proposed a wave-based charging workflow for their electric truck fleet — a solution DSV went on to implement, with initial estimates showing approximately 80% reduction in previously calculated operational costs.",
+    "kpis": [
+      { "label": "My role", "value": "Team Captain" },
+      { "label": "Outcome", "value": "Implemented by DSV" },
+      { "label": "Est. cost reduction", "value": "~80%" },
+      { "label": "Type", "value": "Hackathon / Group project" }
+    ]
+  },
+  "links": [
+    { "label": "View certificate", "url": "/assets/certificates/SDG_Spring_Certificate.pdf" },
+    { "label": "LinkedIn", "url": "https://www.linkedin.com/posts/alejandro-lopez-967546263_sdgchallenge-sustainability-electricvehicles-ugcPost-7468602730694238209-WxE3/?utm_source=share&utm_medium=member_desktop&rcm=ACoAAECvnd8BTPcDhWHPN-YSU4WnzMTDVy0IpNo" }
+  ],
+  "sections": [
+    {
+      "heading": "The challenge",
+      "body": "DSV operates a growing fleet of electric trucks and faced a set of interrelated operational problems stemming from inefficient charging practices:\n\n- **Driver waiting time:** drivers were idling while vehicles charged, creating unnecessary cost and reducing effective working hours.\n- **Unnecessary energy use:** charging was not aligned with operational schedules, leading to energy waste and off-peak inefficiencies.\n- **Battery degradation:** uncoordinated charging patterns accelerated battery wear, increasing long-term maintenance and replacement costs.\n\nThe challenge was framed around sustainability and operational efficiency: find a solution that reduces cost, extends battery life, and fits within DSV's existing operational structure without requiring large infrastructure investment."
+    },
+    {
+      "heading": "The proposed solution",
+      "body": "Our team developed a **wave-based transportation and charging workflow** that decouples driver working time from vehicle charging time — the core insight being that a truck does not need a driver present while it charges.\n\n- **Wave-based scheduling:** trucks are organized into departure and return waves, creating predictable windows when vehicles are available for charging without driver downtime.\n- **Next-day operational charging:** charging is scheduled according to the next day's route requirements, ensuring trucks carry exactly the charge they need — avoiding both overcharging and undercharging.\n- **Driver-vehicle decoupling:** drivers hand off vehicles at the depot rather than waiting on-site, freeing working hours and reducing operational overhead.\n\nThe solution was designed to integrate with DSV's existing fleet management workflows, minimizing change management friction while delivering measurable efficiency gains."
+    },
+    {
+      "heading": "Results and impact",
+      "body": "DSV evaluated the proposed workflow and moved to implement it on their electric fleet. Based on initial estimates at the time of implementation:\n\n- **~80% reduction** in previously calculated operational costs associated with the charging process.\n- Reduced driver waiting time tied to vehicle charging.\n- More controlled charging cycles, reducing battery degradation risk over time.\n- Energy use aligned with actual operational demand rather than ad-hoc availability.\n\nThis is the only project in Alejandro's portfolio where an external organization reviewed the work and committed to implementing it — making it the clearest evidence of real-world analytical and business impact."
+    },
+    {
+      "heading": "Role as Team Captain",
+      "body": "- **Problem framing:** structured the challenge into tractable sub-problems and kept the team focused on DSV's core operational constraints.\n- **Analysis coordination:** directed the business analytics work, ensuring conclusions were grounded in data and operational reality.\n- **Solution design:** led the development of the wave-based workflow concept and validated it against DSV's scheduling requirements.\n- **Stakeholder communication:** presented the solution to DSV stakeholders, translating technical and operational logic into clear business language.\n- **Change management:** addressed adoption barriers by designing a workflow that minimized disruption to existing processes."
+    },
+    {
+      "heading": "What this project shows",
+      "body": "- Applied analytical thinking on a real, ambiguous operations problem — not a pre-cleaned dataset or a defined task.\n- Business case construction: identifying root causes, quantifying impact, and designing a feasible solution under real constraints.\n- End-to-end ownership: from problem framing and analysis to stakeholder presentation and change management planning.\n- Sustainability and operations domain knowledge: fleet electrification, charging logistics, and energy efficiency trade-offs.\n- Leadership under pressure: managing team direction, priorities, and output quality in a time-constrained format."
+    }
+  ]
+}

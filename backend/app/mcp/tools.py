@@ -1,70 +1,69 @@
+import json
 from pathlib import Path
-
-import yaml
 
 from app.core.config import settings
 
-# Maps recognisable name variants to knowledge base filenames (without .md)
+# Maps recognisable name variants to project content slugs (without .json)
 _PROJECT_ALIASES: dict[str, str] = {
-    "dsv": "project_dsv",
-    "ev": "project_dsv",
-    "charging": "project_dsv",
-    "pepadb": "project_pepadb",
-    "pepa": "project_pepadb",
-    "sevilla": "project_pepadb",
-    "marketing": "project_marketing_analyzer",
-    "social media": "project_marketing_analyzer",
-    "nlp": "project_marketing_analyzer",
-    "esg": "project_esg_analyzer",
-    "ecosim": "project_ecosim",
-    "rl": "project_ecosim",
-    "thesis": "project_ecosim",
-    "reinforcement": "project_ecosim",
-    "cv": "cv",
-    "background": "cv",
-    "education": "cv",
-    "skills": "skills",
+    "dsv": "sdg",
+    "sdg": "sdg",
+    "ev": "sdg",
+    "charging": "sdg",
+    "marketing": "smanalyzer",
+    "social media": "smanalyzer",
+    "nlp": "smanalyzer",
+    "sentiment": "smanalyzer",
+    "routeguesser": "routeguesser",
+    "route guesser": "routeguesser",
+    "flask": "routeguesser",
+    "stata": "stata",
+    "housing": "stata",
+    "econometrics": "stata",
+    "pepadb": "pepadb",
+    "pepa": "pepadb",
+    "sevilla": "pepadb",
+    "esg": "esg",
+    "ecosim": "ecosim",
+    "rl": "ecosim",
+    "thesis": "ecosim",
+    "reinforcement": "ecosim",
+    "luna": "luna",
 }
 
 
-def _resolve_filename(project_name: str) -> str | None:
+def _resolve_slug(project_name: str) -> str | None:
     key = project_name.lower().strip()
     if key in _PROJECT_ALIASES:
         return _PROJECT_ALIASES[key]
-    # fallback: check if key appears in any filename
-    kb_path: Path = settings.knowledge_base_path
-    for md_file in kb_path.glob("*.md"):
-        if key in md_file.stem:
-            return md_file.stem
+    projects_path: Path = settings.projects_path
+    for json_file in projects_path.glob("*.json"):
+        if key in json_file.stem:
+            return json_file.stem
     return None
 
 
 def get_project_metadata(project_name: str) -> dict:
     """
-    Return structured metadata for one of Alejandro's projects or background files.
-    Valid names: dsv, pepadb, marketing, esg, ecosim, cv, skills.
+    Return structured metadata for one of Alejandro's projects.
+    Valid names: sdg, smanalyzer, routeguesser, stata, luna, pepadb, esg, ecosim.
     """
-    filename = _resolve_filename(project_name)
-    if not filename:
-        return {"error": f"No knowledge base entry found for '{project_name}'."}
+    slug = _resolve_slug(project_name)
+    if not slug:
+        return {"error": f"No project found for '{project_name}'."}
 
-    kb_path: Path = settings.knowledge_base_path
-    md_file = kb_path / f"{filename}.md"
-    if not md_file.exists():
-        return {"error": f"File {filename}.md not found in knowledge base."}
+    json_file = settings.projects_path / f"{slug}.json"
+    if not json_file.exists():
+        return {"error": f"File {slug}.json not found in project content."}
 
-    content = md_file.read_text(encoding="utf-8")
-    frontmatter, body = {}, content
-
-    if content.startswith("---"):
-        parts = content.split("---", 2)
-        if len(parts) >= 3:
-            frontmatter = yaml.safe_load(parts[1]) or {}
-            body = parts[2].strip()
-
+    data = json.loads(json_file.read_text(encoding="utf-8"))
     return {
-        "title": frontmatter.get("title", filename),
-        "category": frontmatter.get("category", "unknown"),
-        "tags": frontmatter.get("tags", []),
-        "content": body,
+        "title": data.get("title", slug),
+        "status": data.get("status", "unknown"),
+        "category": data.get("category", "project"),
+        "tags": data.get("tags", []),
+        "summary": data.get("cardSummary", ""),
+        "description": data.get("hero", {}).get("description", ""),
+        "sections": [
+            {"heading": s["heading"], "body": s["body"]} for s in data.get("sections", [])
+        ],
     }

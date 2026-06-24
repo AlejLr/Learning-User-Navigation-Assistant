@@ -1,0 +1,14 @@
+{
+  "slug": "ecosim",
+  "title": "EcoSim RL",
+  "status": "planned",
+  "stub": true,
+  "category": "project",
+  "tags": ["Reinforcement Learning", "Planned"],
+  "cardSummary": "Details coming soon.",
+  "hero": {
+    "description": "Details coming soon."
+  },
+  "links": [],
+  "sections": []
+}

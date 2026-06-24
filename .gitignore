@@ -9,10 +9,14 @@ __pycache__/
 # Custom
 
 .env
+.env.*
+!.env.example
 *.pyc
 backend/app/db/vector_store/
 frontend/node_modules/
 frontend/dist/
+.DS_Store
+Thumbs.db
 
 # Distribution / packaging
 .Python

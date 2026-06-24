@@ -1,11 +1,31 @@
+/* Scoped chat theme — variables are namespaced (--chat-*) so they never
+   collide with the portfolio's own :root variables (--accent, --bg, etc.) */
+.chat-page {
+  --chat-blue: #1e3a8a;
+  --chat-blue-light: #3b5fc0;
+  --chat-bg: #0f172a;
+  --chat-surface: #1e293b;
+  --chat-border: #334155;
+  --chat-text: #f1f5f9;
+  --chat-text-muted: #94a3b8;
+
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--chat-bg);
+  color: var(--chat-text);
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
 .app {
   display: flex;
   flex-direction: column;
   width: 100%;
   max-width: 720px;
   height: 90vh;
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--chat-surface);
+  border: 1px solid var(--chat-border);
   border-radius: 12px;
   overflow: hidden;
 }
@@ -13,7 +33,7 @@
 /* Header */
 .app-header {
   padding: 16px 20px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--chat-border);
   display: flex;
   align-items: center;
   gap: 12px;
@@ -22,13 +42,13 @@
 .app-header h1 {
   font-size: 1.1rem;
   font-weight: 700;
-  color: var(--blue-light);
+  color: var(--chat-blue-light);
   letter-spacing: 0.05em;
 }
 
 .app-header p {
   font-size: 0.8rem;
-  color: var(--text-muted);
+  color: var(--chat-text-muted);
   flex: 1;
 }
 
@@ -36,7 +56,7 @@
 .persona-toggle {
   display: flex;
   gap: 4px;
-  background: var(--bg);
+  background: var(--chat-bg);
   padding: 3px;
   border-radius: 6px;
 }
@@ -48,13 +68,13 @@
   border-radius: 4px;
   cursor: pointer;
   background: transparent;
-  color: var(--text-muted);
+  color: var(--chat-text-muted);
   transition: all 0.15s;
 }
 
 .persona-toggle button.active {
-  background: var(--blue);
-  color: var(--text);
+  background: var(--chat-blue);
+  color: var(--chat-text);
 }
 
 /* Chat window */
@@ -68,7 +88,7 @@
 }
 
 .chat-empty {
-  color: var(--text-muted);
+  color: var(--chat-text-muted);
   font-size: 0.9rem;
   text-align: center;
   margin-top: 40px;
@@ -85,15 +105,15 @@
 
 .message--user {
   align-self: flex-end;
-  background: var(--blue);
-  color: var(--text);
+  background: var(--chat-blue);
+  color: var(--chat-text);
   border-bottom-right-radius: 2px;
 }
 
 .message--luna {
   align-self: flex-start;
-  background: var(--bg);
-  border: 1px solid var(--border);
+  background: var(--chat-bg);
+  border: 1px solid var(--chat-border);
   border-bottom-left-radius: 2px;
 }
 
@@ -102,28 +122,28 @@
 .message--luna h3 {
   font-size: 0.95rem;
   margin: 8px 0 4px;
-  color: var(--blue-light);
+  color: var(--chat-blue-light);
 }
 
 .message--luna p { margin: 4px 0; }
 .message--luna ul,
 .message--luna ol { padding-left: 18px; margin: 4px 0; }
-.message--luna strong { color: var(--text); }
+.message--luna strong { color: var(--chat-text); }
 .message--luna code {
-  background: var(--surface);
+  background: var(--chat-surface);
   padding: 1px 4px;
   border-radius: 3px;
   font-size: 0.85em;
 }
 
-.loading { color: var(--text-muted); font-style: italic; }
+.loading { color: var(--chat-text-muted); font-style: italic; }
 
 /* Sources */
 .sources {
   padding: 6px 20px;
   font-size: 0.75rem;
-  color: var(--text-muted);
-  border-top: 1px solid var(--border);
+  color: var(--chat-text-muted);
+  border-top: 1px solid var(--chat-border);
 }
 
 .sources span { font-weight: 600; }
@@ -133,30 +153,30 @@
   display: flex;
   gap: 8px;
   padding: 12px 16px;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--chat-border);
 }
 
 .chat-input textarea {
   flex: 1;
-  background: var(--bg);
-  border: 1px solid var(--border);
+  background: var(--chat-bg);
+  border: 1px solid var(--chat-border);
   border-radius: 8px;
   padding: 8px 12px;
-  color: var(--text);
-  font-family: var(--font);
+  color: var(--chat-text);
+  font-family: inherit;
   font-size: 0.9rem;
   resize: none;
   outline: none;
   transition: border-color 0.15s;
 }
 
-.chat-input textarea:focus { border-color: var(--blue-light); }
-.chat-input textarea::placeholder { color: var(--text-muted); }
+.chat-input textarea:focus { border-color: var(--chat-blue-light); }
+.chat-input textarea::placeholder { color: var(--chat-text-muted); }
 
 .chat-input button {
   padding: 0 18px;
-  background: var(--blue);
-  color: var(--text);
+  background: var(--chat-blue);
+  color: var(--chat-text);
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -165,5 +185,5 @@
   transition: background 0.15s;
 }
 
-.chat-input button:hover:not(:disabled) { background: var(--blue-light); }
+.chat-input button:hover:not(:disabled) { background: var(--chat-blue-light); }
 .chat-input button:disabled { opacity: 0.4; cursor: not-allowed; }

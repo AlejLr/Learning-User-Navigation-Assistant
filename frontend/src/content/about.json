@@ -1,0 +1,18 @@
+{
+  "name": "Alejandro Lopez Ruiz",
+  "subtitle": "Data Science | AI | Analytics",
+  "eyebrow": "Data Science & AI Portfolio",
+  "heroHeadline": "Building data-driven products that connect analytics, AI, and business value.",
+  "heroDescription": "I'm a Data Science and AI student who builds things end-to-end — from understanding what question to ask, to deploying the answer. My work spans NLP pipelines, econometric models, and business analytics that made it into real operations.",
+  "heroStats": ["4 completed projects", "1 implemented in production", "IBM Data Analyst certified"],
+  "aboutText": [
+    "I'm a Data Science and AI student drawn to problems where analytical thinking produces tangible results — not just a good model, but a real decision or outcome. I've built deployed NLP dashboards, modeled large-scale economic datasets, and led a team whose operational recommendation was adopted by a logistics company.",
+    "I care about problem framing as much as model selection, and stakeholder communication as much as technical depth. My goal is to be useful at the intersection of data, business, and engineering."
+  ],
+  "cvUrl": "/assets/CV.pdf",
+  "contact": {
+    "email": "alej.lopez.ruiz@gmail.com",
+    "github": "https://github.com/AlejLr",
+    "linkedin": "https://www.linkedin.com/in/alejandro-lopez-967546263"
+  }
+}

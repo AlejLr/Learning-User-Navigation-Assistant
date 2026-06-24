@@ -2,13 +2,15 @@
 
 **L**earning **U**ser **N**avigation **A**ssistant
 
-A RAG-based conversational agent that answers questions about Alejandro's projects and background, embedded in his portfolio website.
+Not a demo — an AI experience meant to live permanently on Alejandro's portfolio site, acting as a spokesperson and guide for visitors (especially recruiters). A RAG-based conversational agent that answers questions about Alejandro's projects and background, with the long-term goal of speaking, navigating the site, and showing context while it talks.
 
 ---
 
 ## How it works
 
-User sends a question → backend embeds it → retrieves relevant chunks from the knowledge base → injects them into Claude's system prompt → Claude responds as LUNA
+User sends a question → backend embeds it → retrieves relevant chunks from the shared content → injects them into Claude's system prompt → Claude (Haiku 4.5) responds as LUNA, with multi-turn memory and a switchable persona.
+
+**Single source of truth:** project, about, and course content lives once in `frontend/src/content/` as JSON. Both the React portfolio pages and LUNA's retrieval pipeline read the exact same files — update a project once, and both the visible page and what LUNA says about it change together.
 
 ---
 
@@ -19,32 +21,33 @@ User sends a question → backend embeds it → retrieves relevant chunks from t
 | Backend | FastAPI + uvicorn |
 | LLM | Claude Haiku 4.5 (Anthropic) |
 | Embeddings | sentence-transformers (`all-MiniLM-L6-v2`) |
-| Vector store | ChromaDB |
-| Package manager | uv |
-| Frontend | Vite + React + TypeScript (Phase 2) |
+| Vector store | ChromaDB (in-memory) |
+| Tool protocol | MCP (`mcp` Python SDK) |
+| Package manager | uv (backend), npm (frontend) |
+| Frontend | Vite + React + TypeScript + React Router |
 
 ---
 
 ## Roadmap
 
-### Phase 1 - MVP (current)
-- FastAPI `/chat` endpoint (single-turn, returns JSON)
-- Knowledge base: markdown files describing my projects and CV
-- RAG pipeline: embed query → ChromaDB similarity search → inject top-k chunks → Claude Haiku response
-- Persona: LUNA, professional portfolio assistant
+### Phase 1 — MVP (done)
+- FastAPI `/chat` endpoint, RAG pipeline (ChromaDB + sentence-transformers), Claude Haiku response
+- Persona: LUNA, portfolio assistant
 
-### Phase 2 - Extended prototype
-- Multi-turn conversation support
-- Persona switching: professional vs casual tone
-- MCP server skeleton with a placeholder tool (`get_project_metadata`)
-- React chat UI (Vite + TypeScript)
-- Deploy: backend on Render, frontend on Vercel
+### Phase 2 — Extended prototype (in progress)
+- [x] Multi-turn conversation (history capped at last 6 messages, client-held)
+- [x] Persona switching: professional vs casual tone
+- [x] MCP server skeleton with `project_metadata` tool (standalone, not yet wired into `/chat`)
+- [x] React chat UI (Vite + TypeScript), now at its own `/chat` route
+- [x] Real portfolio content migrated into the React app (`/`, `/projects`, `/projects/:slug`)
+- [ ] Wire the MCP server into `/chat` so LUNA can call `project_metadata` as a tool during conversations
+- [ ] Deploy: backend on Render, frontend on Vercel, CORS locked to the production domain
 
-### Phase 3 - Full product
+### Phase 3 — Full product
 - Voice output via TTS
-- Agent-controlled frontend navigation (LUNA decides which portfolio page to show)
-- Full MCP tool integration
-- Advanced retrieval: chunking, reranking
+- Agent-controlled frontend navigation (LUNA scrolls/routes the portfolio while talking, synchronized with speech)
+- Full MCP tool integration (navigation tools, not just data lookup)
+- Advanced retrieval: chunking, reranking, summary-compressed history
 
 ---
 
@@ -53,15 +56,22 @@ User sends a question → backend embeds it → retrieves relevant chunks from t
 ```
 ├── backend/
 │   ├── app/
-│   │   ├── api/         # route definitions
+│   │   ├── api/         # /chat route
 │   │   ├── core/        # config, env vars
+│   │   ├── mcp/         # MCP server + tools (project_metadata)
 │   │   ├── models/      # pydantic schemas
-│   │   └── services/    # retrieval, llm, ingestion logic
+│   │   └── services/    # ingestion, retrieval, llm
 │   ├── pyproject.toml
 │   └── main.py
 ├── frontend/
-│   └── src/             # React app (Phase 2)
-├── knowledge_base/      # markdown files (the RAG source)
+│   ├── public/assets/    # CV, certificates, icons
+│   └── src/
+│       ├── content/      # single source of truth: projects/*.json, about.json, courses.json
+│       ├── portfolio/     # Header, Footer, HomePage, ProjectsPage, ProjectPage, ProjectCard
+│       ├── components/    # chat UI: ChatWindow, ChatMessage, ChatInput, PersonaToggle
+│       ├── hooks/         # useChat
+│       ├── api/           # backend API client
+│       └── ChatPage.tsx    # chat UI mounted at /chat
 └── .env.example
 ```
 
@@ -69,17 +79,19 @@ User sends a question → backend embeds it → retrieves relevant chunks from t
 
 ## Getting started
 
+**Backend:**
 ```bash
-# install dependencies
+cd backend
 uv sync
-
-# set up environment
-cp .env.example .env
-# add your ANTHROPIC_API_KEY to .env
-
-# run the server
-uv run uvicorn backend.app.main:app --reload
-
-# POST /chat
-# { "message": "What is the DSV project about?" }
+cp ../.env.example ../.env   # add your ANTHROPIC_API_KEY
+uv run uvicorn app.main:app --reload
 ```
+
+**Frontend:**
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Portfolio: `http://localhost:5173/`. Chat: `http://localhost:5173/chat`.

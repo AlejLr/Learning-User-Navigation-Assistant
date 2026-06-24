@@ -1,7 +1,6 @@
-from pathlib import Path
+import json
 
 import chromadb
-import yaml
 from sentence_transformers import SentenceTransformer
 
 from app.core.config import settings
@@ -9,13 +8,23 @@ from app.core.config import settings
 embed_model: SentenceTransformer | None = None
 collection: chromadb.Collection | None = None
 
+_STUB_MARKER = "Details coming soon."
 
-def _parse_markdown(content: str) -> tuple[dict, str]:
-    if content.startswith("---"):
-        parts = content.split("---", 2)
-        if len(parts) >= 3:
-            return yaml.safe_load(parts[1]) or {}, parts[2].strip()
-    return {}, content.strip()
+
+def _flatten_project(data: dict) -> str:
+    parts = [data["title"], data["hero"]["description"]]
+    for section in data.get("sections", []):
+        parts.append(section["heading"])
+        parts.append(section["body"])
+    return "\n\n".join(parts)
+
+
+def _flatten_about(data: dict) -> str:
+    return "\n\n".join([data["heroHeadline"], data["heroDescription"], *data["aboutText"]])
+
+
+def _flatten_courses(data: list) -> str:
+    return "\n\n".join(f"{c['name']} ({c['badge']}): {c['detail']}" for c in data)
 
 
 def ingest() -> None:
@@ -29,20 +38,37 @@ def ingest() -> None:
         metadata={"hnsw:space": "cosine"},
     )
 
-    kb_path: Path = settings.knowledge_base_path
     documents, embeddings, ids, metadatas = [], [], [], []
 
-    for md_file in sorted(kb_path.glob("*.md")):
-        content = md_file.read_text(encoding="utf-8")
-        frontmatter, body = _parse_markdown(content)
+    for json_file in sorted(settings.projects_path.glob("*.json")):
+        data = json.loads(json_file.read_text(encoding="utf-8"))
+        if data.get("cardSummary") == _STUB_MARKER:
+            continue  # no real content yet, nothing useful to embed
 
-        doc_id = md_file.stem
-        embedding = embed_model.encode(body).tolist()
-
+        body = _flatten_project(data)
         documents.append(body)
-        embeddings.append(embedding)
-        ids.append(doc_id)
-        metadatas.append({"title": frontmatter.get("title", doc_id)})
+        embeddings.append(embed_model.encode(body).tolist())
+        ids.append(json_file.stem)
+        metadatas.append({"title": data.get("title", json_file.stem)})
+
+    about_file = settings.content_path / "about.json"
+    if about_file.exists():
+        data = json.loads(about_file.read_text(encoding="utf-8"))
+        body = _flatten_about(data)
+        documents.append(body)
+        embeddings.append(embed_model.encode(body).tolist())
+        ids.append("about")
+        metadatas.append({"title": "About Alejandro"})
+
+    courses_file = settings.content_path / "courses.json"
+    if courses_file.exists():
+        data = json.loads(courses_file.read_text(encoding="utf-8"))
+        if data:
+            body = _flatten_courses(data)
+            documents.append(body)
+            embeddings.append(embed_model.encode(body).tolist())
+            ids.append("courses")
+            metadatas.append({"title": "Courses & Certifications"})
 
     if documents:
         collection.add(documents=documents, embeddings=embeddings, ids=ids, metadatas=metadatas)

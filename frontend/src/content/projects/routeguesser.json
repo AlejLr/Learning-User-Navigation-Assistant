@@ -1,0 +1,48 @@
+{
+  "slug": "routeguesser",
+  "title": "RouteGuesser",
+  "status": "completed",
+  "stub": false,
+  "category": "project",
+  "tags": ["Software Engineering", "Web App", "Frontend (HTML/CSS/JS)", "Completed", "Group project", "Python", "Flask", "Docker"],
+  "cardSummary": "Flask + Leaflet web game where players guess optimal routes in Leiden. Focuses on a clean JSON API, a responsive frontend, and a Dockerized deployment workflow.",
+  "hero": {
+    "description": "A lightweight, containerized web app where players trace optimal routes across Leiden's city map. Built around a clean JSON API and a responsive Leaflet UI. Incorporates pathfinding algorithms, data structures, and full-stack development best practices. Deployed on Google Cloud Run.",
+    "kpis": [
+      { "label": "Status", "value": "Finished Group Project" },
+      { "label": "Final Grade", "value": "8.5 / 10" },
+      { "label": "Code Quality Grade", "value": "10 / 10" },
+      { "label": "Overall Project Structure, Design and Quality", "value": "9.5 / 10" }
+    ]
+  },
+  "links": [
+    { "label": "Play Live", "url": "https://routeguesser-392262893051.europe-west1.run.app/" },
+    { "label": "GitHub Repository", "url": "https://github.com/AlejLr/Routeguesser" }
+  ],
+  "sections": [
+    {
+      "heading": "What is RouteGuesser?",
+      "body": "A map-based game to help new students learn Leiden's street network by *playing* with real routes. The browser UI guides a player from a start to an end location while a Flask backend computes the optimal route and validates each move. The result is a compact, production-minded build: a single Docker image, fast startup, and an API-first contract that kept a 6 person team moving in parallel.\n\n- **Purpose:** introduce new students to the city through simple game play.\n- **Approach:** clean JSON communication between a Leaflet UI and Flask endpoints.\n- **Outcome:** delivered a complete end-to-end solution with strong software quality."
+    },
+    {
+      "heading": "Role within the team",
+      "body": "- **Product & UX:** player flow, UI/visual design, and UX interactions.\n- **Frontend:** HTML/CSS and main gameplay JavaScript (game logic, animations, server communication).\n- **API integration:** designed the client-server contract; implemented appropriate request/response handling.\n- **Server glue:** coordinated frontend and backend data structure alignment for cross-communication.\n- **Quality assurance:** preserved code style and structure (contributed to a 10/10 code quality score).\n\nKnown weak spots that would have been improved with more time: more extensive testing and CI coverage, improved user onboarding/tutorial features, clearer UML and process documentation, and a more explicit software development model in the final report."
+    },
+    {
+      "heading": "Gameplay",
+      "body": "1. Select difficulty and number of rounds.\n2. `POST /api/main` with `{ type: \"start\", difficulty }` → backend returns start/end and blocked roads.\n3. Click white node markers to extend your path; UI calls `POST /api/main` with `{ type: \"neighbours\" }` to get valid moves.\n4. Reach the destination → score calculated vs the optimal path; animated progress feedback.\n5. Repeat for the chosen number of routes; view final summary.\n\n- **Scoring:** `score = (optimal_distance / player_distance) x 100%` (capped at 100%).\n- **Difficulties:** Easy (no blocks), Medium (~50 blocked roads), Hard (~100 + non initially known blocked roads).\n- **UI:** Leaflet map centered on Leiden with start (green), end (blue), blocked roads (red)."
+    },
+    {
+      "heading": "API & architecture",
+      "body": "**Stack:** Flask 2.2.2 (Python 3.11), HTML5, CSS3, Vanilla JS, Leaflet.js, Flask-CORS (local dev), NetworkX, NumPy, GeoJSON, Matplotlib. Deployed via Docker and Google Cloud Run."
+    },
+    {
+      "heading": "Results & what this demonstrates",
+      "body": "- Full-stack delivery: Flask API + responsive JS/Leaflet UI with smooth team collaboration.\n- Clean, versioned JSON contracts that kept client/server decoupled.\n- From local Docker to Google Cloud Run with a minimal, reliable release process.\n- Solid data-structure design (graph routing) with pragmatic performance."
+    },
+    {
+      "heading": "Roadmap (post-course ideas)",
+      "body": "- Score persistence, sessions, and a leaderboard.\n- Global map support (OpenStreetMap integration).\n- Named POIs for popular student locations.\n- Automated tests + improved documentation & UML."
+    }
+  ]
+}
