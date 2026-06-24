@@ -1,14 +1,52 @@
 {
   "slug": "pepadb",
-  "title": "PEPAdb",
-  "status": "planned",
-  "stub": true,
+  "title": "PEPAdb: Archaeological Research Database Extension",
+  "status": "completed",
+  "stub": false,
   "category": "project",
-  "tags": ["Data Platform", "Planned"],
-  "cardSummary": "Details coming soon.",
+  "tags": ["Software Engineering", "Full-Stack", "GIS", "React", "FastAPI", "Docker", "Group project", "Completed", "Scrum"],
+  "cardSummary": "Drove weekly client communication and contributed to database design and integration for a 6-person team extending an archaeological research database for the University of Seville, and led, and largely built solo, the frontend: map integration, data visualization, and a stakeholder-friendly interface for non-technical researchers.",
   "hero": {
-    "description": "Details coming soon."
+    "description": "A real academic client project: extending PEPAdb, the University of Seville's open-access archaeological database, with advanced filtering, GIS-based spatial analysis, and machine-learning provenance prediction for prehistoric personal adornments. Built end-to-end by a 6-person team over four Scrum sprints, with full CI/CD and deployment to the client's production server.",
+    "kpis": [
+      { "label": "My role", "value": "Frontend Lead & Client Liaison" },
+      { "label": "Team size", "value": "6 (Scrum)" },
+      { "label": "Client", "value": "University of Seville" },
+      { "label": "CI checks required to merge", "value": "6 / 6" },
+      { "label": "Deployment", "value": "Live on client's server" }
+    ]
   },
-  "links": [],
-  "sections": []
+  "links": [
+    { "label": "GitHub Repository", "url": "https://github.com/ludev-nl/2026-01-PEPAdb" }
+  ],
+  "sections": [
+    {
+      "heading": "What is PEPAdb?",
+      "body": "PEPAdb (the Prehistoric Europe's Personal Adornment database) is a research-oriented archaeological database maintained by the University of Seville, focused on petrological, compositional, and provenance-related data from archaeological finds, personal adornments from prehistoric Europe. The goal is open, free access to archaeological data with real tools to analyze it, not just browse it.\n\nThe existing platform supported basic tabular and map views with simple filtering and export. Our team of six was brought in to extend it significantly: richer filtering, proper spatial analysis on the map, the ability to upload new compositional and spectral datasets, and (the most technically ambitious piece) running containerized machine-learning models to predict the geological provenance of materials directly from uploaded data."
+    },
+    {
+      "heading": "My role: Frontend Lead & Client Liaison",
+      "body": "Beyond the four formal sprint-review meetings, I drove the team's regular weekly communication with the client, Carlos Odriozola, keeping requirements aligned and feedback flowing between sprints, not just at the big checkpoints. I also contributed to the database design and integration work underpinning the platform's querying and spatial features.\n\nOn the frontend, I led the architecture and built almost all of it myself:\n\n- **Project skeleton:** built the React project structure from scratch: routing, layout, and state architecture that the rest of the team's features were built on top of.\n- **Filtering:** implemented the filter form component and wired it to the backend API, the foundation for the advanced structured querying the client asked for.\n- **Map integration & data visualization:** built the interactive map page end to end, integrating the map component, and implemented URL state persistence for active filters so users don't lose context when navigating, a specific requirement from the client (no losing your place mid-research).\n- **Map-to-record navigation:** built clicking a map marker through to its full record detail page (co-built with a teammate).\n- **Stakeholder-friendly presentation:** after the Sprint 8 client meeting, redesigned the parts of the UI that mattered most for a non-technical academic audience: About page, navigation bar, footer, homepage copy, and logo."
+    },
+    {
+      "heading": "What the team built",
+      "body": "- **Advanced structured & spatial filtering:** multi-parameter queries on tabular data, plus bounding-box spatial filtering on the map using PostGIS.\n- **GIS integration:** connected the map to GeoServer over WMS/WFS, added a heatmap layer, time-based filtering by chronology, marker clustering, PNG export, and synchronized table/map views.\n- **ML provenance prediction:** integrated two containerized ML models (VORTEX and MACLAS) so researchers can upload a compositional or spectral dataset and get an automated prediction of geological origin, with SHAP explainability values shown for both models.\n- **Multi-format export:** download query, filter, and prediction results in CSV, TSV, JSON, Excel, and GeoJSON, across every view (database, map, site detail, item detail).\n- **Explore/analytics page:** database-wide statistics for researchers to get a quick sense of the dataset.\n\nEvery one of these started as a user story with explicit, testable acceptance criteria, agreed with the client before a single line of code was written for it."
+    },
+    {
+      "heading": "Engineering process",
+      "body": "The team ran a proper Scrum process over four two-week sprints (following an earlier midterm phase): sprint planning, a Definition of Ready and Definition of Done that got stricter as the project matured, weekly client and TA check-ins, and sprint retrospectives that actually changed how we worked. For example, after Sprint 5 the team adopted mandatory pull requests with two-person review after retrospective feedback showed code review was hard to track without them.\n\n**CI/CD:** every pull request had to pass six parallel GitHub Actions jobs before merging: backend lint (Ruff), backend unit tests (pytest), database performance tests against real PostgreSQL/PostGIS, frontend lint (ESLint), frontend build (Vite), and full end-to-end tests (Playwright). A three-stage branch model (development to staging to main) mirrored a standard production pipeline, with automated deployment to the client's university server over SSH once credentials were finalized."
+    },
+    {
+      "heading": "Testing approach",
+      "body": "Since PEPAdb is used for real archaeological research, a silently wrong filter is worse than a visibly broken one: it can mislead a researcher without them ever noticing. The team built a layered testing strategy: mocked unit tests for fast feedback, integration tests against a real PostgreSQL/PostGIS instance asserting query performance, and Playwright end-to-end tests clicking through the actual application: filtering, sorting, paginating, and navigating to a record detail page and back, checking that URL state survived the round trip.\n\nFor the most input-heavy endpoint, the team applied equivalence partitioning and boundary value analysis systematically: testing valid, incomplete, and out-of-range bounding boxes, including the classic off-by-one at the coordinate boundary. That exercise surfaced two validation rules the team had assumed \"just worked\" but hadn't actually been verified."
+    },
+    {
+      "heading": "Working with a non-technical academic client",
+      "body": "The client, Carlos Odriozola at the University of Seville, was treated as a continuous validation partner rather than a one-time requirements source. Four formal client meetings were held across the project, each one a real checkpoint: features were demoed live and either accepted or sent back with feedback.\n\nThe clearest example: a term in the original requirements (\"spectral dataset\") had been interpreted by the team as a separate data type from compositional data. A client meeting resolved the ambiguity: in PEPAdb's context, \"spectral\" specifically means XRF compositional data, confirming the implementation had actually been correct all along, just under-specified in the requirements. That's the kind of ambiguity that only surfaces when you keep the client in the loop instead of just building from a spec once and disappearing."
+    },
+    {
+      "heading": "What this project shows",
+      "body": "- Owning the client relationship day-to-day, not just at formal checkpoints: translating an academic researcher's needs into concrete, buildable requirements on a weekly cadence.\n- Leading and largely solo-building frontend architecture for a team of six: routing, layout, state, map integration, and data visualization that other people's features depended on.\n- Contributing to database design and integration, not just consuming an API designed by someone else.\n- Full-stack collaboration at scale: FastAPI backend, PostGIS-backed spatial queries, GeoServer GIS integration, containerized ML microservices, and a React frontend all shipping together through one CI/CD pipeline.\n- Real Scrum discipline: Definition of Ready/Done as actual gates, retrospectives that changed process, and a client treated as a continuous stakeholder rather than a one-time requirements drop."
+    }
+  ]
 }

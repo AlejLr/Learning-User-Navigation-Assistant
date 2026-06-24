@@ -27,6 +27,10 @@ def _flatten_courses(data: list) -> str:
     return "\n\n".join(f"{c['name']} ({c['badge']}): {c['detail']}" for c in data)
 
 
+def _flatten_personal(data: dict) -> str:
+    return "\n\n".join(f"{note['topic']}: {note['detail']}" for note in data.get("notes", []))
+
+
 def ingest() -> None:
     global embed_model, collection
 
@@ -69,6 +73,16 @@ def ingest() -> None:
             embeddings.append(embed_model.encode(body).tolist())
             ids.append("courses")
             metadatas.append({"title": "Courses & Certifications"})
+
+    personal_file = settings.private_content_path / "personal.json"
+    if personal_file.exists():
+        data = json.loads(personal_file.read_text(encoding="utf-8"))
+        body = _flatten_personal(data)
+        if body:
+            documents.append(body)
+            embeddings.append(embed_model.encode(body).tolist())
+            ids.append("personal")
+            metadatas.append({"title": "Personal context"})
 
     if documents:
         collection.add(documents=documents, embeddings=embeddings, ids=ids, metadatas=metadatas)

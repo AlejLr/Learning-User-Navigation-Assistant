@@ -8,7 +8,7 @@ export function ChatPage() {
   const { messages, sources, persona, setPersona, loading, send } = useChat()
 
   return (
-    <div className="chat-page">
+    <div className="chat-theme chat-page">
       <div className="app">
         <div className="app-header">
           <h1>LUNA</h1>

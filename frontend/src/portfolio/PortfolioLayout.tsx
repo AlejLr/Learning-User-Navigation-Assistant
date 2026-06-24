@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom'
 import { Header } from './Header'
 import { Footer } from './Footer'
+import { ChatWidget } from '../components/ChatWidget'
 import '../portfolio.css'
 
 export function PortfolioLayout() {
@@ -9,6 +10,7 @@ export function PortfolioLayout() {
       <Header />
       <Outlet />
       <Footer />
+      <ChatWidget />
     </>
   )
 }

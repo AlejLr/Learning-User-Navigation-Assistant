@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     claude_model: str = "claude-haiku-4-5-20251001"
     top_k: int = 3
     content_path: Path = Path(__file__).parents[3] / "frontend" / "src" / "content"
+    private_content_path: Path = Path(__file__).parents[2] / "private_content"
 
     model_config = {"env_file": str(Path(__file__).parents[3] / ".env")}
 

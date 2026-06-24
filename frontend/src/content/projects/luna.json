@@ -1,13 +1,13 @@
 {
   "slug": "luna",
-  "title": "LUNA — Learning-User Navigation Assistant",
+  "title": "LUNA: Learning-User Navigation Assistant",
   "status": "in-progress",
   "stub": true,
   "category": "project",
   "tags": ["AI", "LLM", "Software Engineering", "NLP", "Under Development", "FastAPI", "Vector Search"],
   "cardSummary": "An LLM-powered assistant designed to guide visitors through the portfolio, answer technical questions, and provide tailored navigation using embeddings, vector search, and a custom chat widget.",
   "hero": {
-    "description": "An LLM-powered assistant designed to guide visitors through the portfolio, answer technical questions, and provide tailored navigation using embeddings, vector search, and a custom chat widget. Under active development — this project page will grow as the build progresses."
+    "description": "An LLM-powered assistant designed to guide visitors through the portfolio, answer technical questions, and provide tailored navigation using embeddings, vector search, and a custom chat widget. Under active development. This project page will grow as the build progresses."
   },
   "links": [
     { "label": "GitHub", "url": "https://github.com/AlejLr/Learning-User-Navigation-Assistant" }

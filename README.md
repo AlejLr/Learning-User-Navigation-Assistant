@@ -94,4 +94,5 @@ npm install
 npm run dev
 ```
 
-Portfolio: `http://localhost:5173/`. Chat: `http://localhost:5173/chat`.
+Portfolio: `http://localhost:5173/`. 
+Chat: `http://localhost:5173/chat`.

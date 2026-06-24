@@ -38,14 +38,15 @@ export function ProjectPage() {
           </div>
         )}
 
-        <p style={{ marginTop: '0.8rem', display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-          {project.links.map(link => (
-            <a className="btn" href={link.url} target="_blank" rel="noopener noreferrer" key={link.url}>
-              {link.label}
-            </a>
-          ))}
-          <Link className="btn btn-outline" to="/projects">← Back to Projects</Link>
-        </p>
+        {project.links.length > 0 && (
+          <div className="project-links">
+            {project.links.map(link => (
+              <a className="btn" href={link.url} target="_blank" rel="noopener noreferrer" key={link.url}>
+                {link.label}
+              </a>
+            ))}
+          </div>
+        )}
       </section>
 
       {project.sections.length === 0 ? (
@@ -61,6 +62,10 @@ export function ProjectPage() {
           </section>
         ))
       )}
+
+      <div className="project-page-footer">
+        <Link className="btn-outline" to="/projects">← Back to Projects</Link>
+      </div>
     </main>
   )
 }

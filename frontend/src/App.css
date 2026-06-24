@@ -1,6 +1,8 @@
 /* Scoped chat theme — variables are namespaced (--chat-*) so they never
-   collide with the portfolio's own :root variables (--accent, --bg, etc.) */
-.chat-page {
+   collide with the portfolio's own :root variables (--accent, --bg, etc.).
+   Split from layout so both the full-page ChatPage and the floating
+   ChatWidget can share the same theme without the viewport-centering. */
+.chat-theme {
   --chat-blue: #1e3a8a;
   --chat-blue-light: #3b5fc0;
   --chat-bg: #0f172a;
@@ -9,13 +11,16 @@
   --chat-text: #f1f5f9;
   --chat-text-muted: #94a3b8;
 
+  color: var(--chat-text);
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.chat-page {
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
   background: var(--chat-bg);
-  color: var(--chat-text);
-  font-family: system-ui, -apple-system, sans-serif;
 }
 
 .app {
