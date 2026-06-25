@@ -4,13 +4,16 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes import router
+from app.mcp import client as mcp_client
 from app.services import ingestion
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     ingestion.ingest()
+    await mcp_client.connect()
     yield
+    await mcp_client.disconnect()
 
 
 app = FastAPI(title="LUNA Portfolio Assistant", lifespan=lifespan)

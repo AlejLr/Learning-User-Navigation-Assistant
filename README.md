@@ -2,7 +2,7 @@
 
 **L**earning **U**ser **N**avigation **A**ssistant
 
-Not a demo — an AI experience meant to live permanently on Alejandro's portfolio site, acting as a spokesperson and guide for visitors (especially recruiters). A RAG-based conversational agent that answers questions about Alejandro's projects and background, with the long-term goal of speaking, navigating the site, and showing context while it talks.
+Not a demo — an AI experience meant to live permanently on my portfolio site, acting as a spokesperson and guide for visitors (especially recruiters ;) ). A RAG-based conversational agent that answers questions about my projects and background, with the long-term goal of speaking, navigating the site, and showing context while it talks.
 
 ---
 
@@ -40,7 +40,7 @@ User sends a question → backend embeds it → retrieves relevant chunks from t
 - [x] MCP server skeleton with `project_metadata` tool (standalone, not yet wired into `/chat`)
 - [x] React chat UI (Vite + TypeScript), now at its own `/chat` route
 - [x] Real portfolio content migrated into the React app (`/`, `/projects`, `/projects/:slug`)
-- [ ] Wire the MCP server into `/chat` so LUNA can call `project_metadata` as a tool during conversations
+- [x] Wire the MCP server into `/chat` so LUNA can call `project_metadata` as a tool during conversations
 - [ ] Deploy: backend on Render, frontend on Vercel, CORS locked to the production domain
 
 ### Phase 3 — Full product

@@ -1,10 +1,11 @@
 """
-LUNA MCP Server — exposes portfolio tools for Claude to call.
+LUNA MCP Server: exposes portfolio tools for Claude to call.
 
 Phase 2: get_project_metadata (read-only knowledge base lookup)
 Phase 3: navigate_to_section, scroll_to, show_image (frontend DOM control)
 
-Run standalone from backend/:
+Spawned automatically as a subprocess by the FastAPI app (see app/mcp/client.py).
+Can also be run standalone for manual testing, from backend/:
     uv run python -m app.mcp.server
 """
 
@@ -26,4 +27,4 @@ def project_metadata(project_name: str) -> dict:
 
 
 if __name__ == "__main__":
-    mcp.run(transport="sse")
+    mcp.run(transport="stdio")

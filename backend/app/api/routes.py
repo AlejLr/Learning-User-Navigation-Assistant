@@ -9,7 +9,7 @@ router = APIRouter()
 @router.post("/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest) -> ChatResponse:
     chunks, sources = retrieval.retrieve(request.message)
-    response_text = llm.chat(request.message, chunks, request.history, request.persona)
+    response_text = await llm.chat(request.message, chunks, request.history, request.persona)
     updated_history = request.history + [
         {"role": "user", "content": request.message},
         {"role": "assistant", "content": response_text},
