@@ -17,6 +17,7 @@ dependencies = [
     "pydantic>=2.0.0",
     "chromadb>=0.5.0",
     "sentence-transformers>=2.2.0",
+    "torch>=2.0.0",
     "python-dotenv>=1.0.0",
     "mcp>=1.0.0",
 ]
@@ -27,6 +28,17 @@ dev = [
     "ruff>=0.2.0",
     "black>=24.0.0",
 ]
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
 
 [tool.black]
 line-length = 88
