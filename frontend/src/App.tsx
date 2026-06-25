@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { SpeedInsights } from '@vercel/speed-insights/react'
+import { Analytics } from '@vercel/analytics/react'
 import { PortfolioLayout } from './portfolio/PortfolioLayout'
 import { HomePage } from './portfolio/HomePage'
 import { ProjectsPage } from './portfolio/ProjectsPage'
@@ -18,6 +19,7 @@ export default function App() {
         <Route path="/chat" element={<ChatPage />} />
       </Routes>
       <SpeedInsights />
+      <Analytics />
     </BrowserRouter>
   )
 }
