@@ -20,7 +20,7 @@ User sends a question → backend embeds it → retrieves relevant chunks from t
 |---|---|
 | Backend | FastAPI + uvicorn |
 | LLM | Claude Haiku 4.5 (Anthropic) |
-| Embeddings | sentence-transformers (`all-MiniLM-L6-v2`) |
+| Embeddings | ChromaDB built-in ONNX embedder (`all-MiniLM-L6-v2`, no PyTorch) |
 | Vector store | ChromaDB (in-memory) |
 | Tool protocol | MCP (`mcp` Python SDK) |
 | Package manager | uv (backend), npm (frontend) |
@@ -31,7 +31,7 @@ User sends a question → backend embeds it → retrieves relevant chunks from t
 ## Roadmap
 
 ### Phase 1 — MVP (done)
-- FastAPI `/chat` endpoint, RAG pipeline (ChromaDB + sentence-transformers), Claude Haiku response
+- FastAPI `/chat` endpoint, RAG pipeline (ChromaDB's built-in ONNX embedder), Claude Haiku response
 - Persona: LUNA, portfolio assistant
 
 ### Phase 2 — Extended prototype (in progress)

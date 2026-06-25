@@ -3,6 +3,7 @@ import { ChatWindow } from './ChatWindow'
 import { ChatInput } from './ChatInput'
 import { PersonaToggle } from './PersonaToggle'
 import { useChat } from '../hooks/useChat'
+import { warmUp } from '../api/chat'
 import '../App.css'
 import './ChatWidget.css'
 
@@ -14,6 +15,7 @@ export function ChatWidget() {
   function handleOpen() {
     setOpen(true)
     setHasOpenedOnce(true)
+    warmUp()
   }
 
   return (

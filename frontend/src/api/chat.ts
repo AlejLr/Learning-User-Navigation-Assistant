@@ -11,6 +11,11 @@ export interface ChatResponse {
   history: Message[]
 }
 
+/** Fire-and-forget request to wake a sleeping Render free-tier instance before the user finishes typing. */
+export function warmUp(): void {
+  fetch(`${API_URL}/health`).catch(() => {})
+}
+
 export async function sendMessage(
   message: string,
   history: Message[],

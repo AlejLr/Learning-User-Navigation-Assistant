@@ -1,11 +1,9 @@
 import json
 
 import chromadb
-from sentence_transformers import SentenceTransformer
 
 from app.core.config import settings
 
-embed_model: SentenceTransformer | None = None
 collection: chromadb.Collection | None = None
 
 _STUB_MARKER = "Details coming soon."
@@ -32,9 +30,7 @@ def _flatten_personal(data: dict) -> str:
 
 
 def ingest() -> None:
-    global embed_model, collection
-
-    embed_model = SentenceTransformer("all-MiniLM-L6-v2")
+    global collection
 
     client = chromadb.EphemeralClient()
     collection = client.get_or_create_collection(
@@ -42,25 +38,21 @@ def ingest() -> None:
         metadata={"hnsw:space": "cosine"},
     )
 
-    documents, embeddings, ids, metadatas = [], [], [], []
+    documents, ids, metadatas = [], [], []
 
     for json_file in sorted(settings.projects_path.glob("*.json")):
         data = json.loads(json_file.read_text(encoding="utf-8"))
         if data.get("cardSummary") == _STUB_MARKER:
             continue  # no real content yet, nothing useful to embed
 
-        body = _flatten_project(data)
-        documents.append(body)
-        embeddings.append(embed_model.encode(body).tolist())
+        documents.append(_flatten_project(data))
         ids.append(json_file.stem)
         metadatas.append({"title": data.get("title", json_file.stem)})
 
     about_file = settings.content_path / "about.json"
     if about_file.exists():
         data = json.loads(about_file.read_text(encoding="utf-8"))
-        body = _flatten_about(data)
-        documents.append(body)
-        embeddings.append(embed_model.encode(body).tolist())
+        documents.append(_flatten_about(data))
         ids.append("about")
         metadatas.append({"title": "About Alejandro"})
 
@@ -68,9 +60,7 @@ def ingest() -> None:
     if courses_file.exists():
         data = json.loads(courses_file.read_text(encoding="utf-8"))
         if data:
-            body = _flatten_courses(data)
-            documents.append(body)
-            embeddings.append(embed_model.encode(body).tolist())
+            documents.append(_flatten_courses(data))
             ids.append("courses")
             metadatas.append({"title": "Courses & Certifications"})
 
@@ -80,11 +70,10 @@ def ingest() -> None:
         body = _flatten_personal(data)
         if body:
             documents.append(body)
-            embeddings.append(embed_model.encode(body).tolist())
             ids.append("personal")
             metadatas.append({"title": "Personal context"})
 
     if documents:
-        collection.add(documents=documents, embeddings=embeddings, ids=ids, metadatas=metadatas)
+        collection.add(documents=documents, ids=ids, metadatas=metadatas)
 
     print(f"[LUNA] Ingested {len(documents)} documents into ChromaDB.")
