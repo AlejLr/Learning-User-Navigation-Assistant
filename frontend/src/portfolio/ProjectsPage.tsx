@@ -1,35 +1,60 @@
 import { useMemo, useState } from 'react'
 import { projects } from '../content/projects'
 import { ProjectCard } from './ProjectCard'
+import type { ProjectStatus } from '../content/types'
+
+// Tags that describe tooling/tech stack rather than topic/domain. Anything
+// not listed here defaults to the Topic dropdown.
+const STACK_TAGS = new Set([
+  'Python', 'FastAPI', 'React', 'Docker', 'GIS', 'Scrum', 'Streamlit',
+  'Flask', 'Stata', 'Vector Search', 'LLM', 'Full-Stack',
+])
+
+const STATUS_LABELS: Record<ProjectStatus, string> = {
+  completed: 'Completed',
+  'in-progress': 'In progress',
+  planned: 'Planned',
+}
 
 function tagSlug(tag: string): string {
   return tag.toLowerCase().replace(/\s*\/\s*/g, '-').replace(/\s+/g, '-')
 }
 
 export function ProjectsPage() {
-  const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set())
+  const [topic, setTopic] = useState('')
+  const [status, setStatus] = useState('')
+  const [stack, setStack] = useState('')
 
-  const allTags = useMemo(() => {
-    const set = new Set<string>()
-    projects.forEach(p => p.tags.forEach(t => set.add(t)))
-    return Array.from(set).sort()
+  const { topicOptions, stackOptions } = useMemo(() => {
+    const topics = new Set<string>()
+    const stacks = new Set<string>()
+    projects.forEach(p => p.tags.forEach(tag => {
+      (STACK_TAGS.has(tag) ? stacks : topics).add(tag)
+    }))
+    return {
+      topicOptions: Array.from(topics).sort(),
+      stackOptions: Array.from(stacks).sort(),
+    }
   }, [])
 
   const visible = projects.filter(p => {
-    if (selectedTags.size === 0) return true
     const slugs = p.tags.map(tagSlug)
-    return Array.from(selectedTags).every(tag => slugs.includes(tag))
+    if (topic && !slugs.includes(tagSlug(topic))) return false
+    if (stack && !slugs.includes(tagSlug(stack))) return false
+    if (status && p.status !== status) return false
+    return true
   })
 
-  function toggleTag(tag: string) {
-    const slug = tagSlug(tag)
-    setSelectedTags(prev => {
-      const next = new Set(prev)
-      if (next.has(slug)) next.delete(slug)
-      else next.add(slug)
-      return next
-    })
+  const completed = visible.filter(p => p.status === 'completed')
+  const inProgressOrPlanned = visible.filter(p => p.status !== 'completed')
+
+  function clearFilters() {
+    setTopic('')
+    setStatus('')
+    setStack('')
   }
+
+  const hasFilters = Boolean(topic || status || stack)
 
   return (
     <main id="main-content" className="container" style={{ marginTop: '2rem' }}>
@@ -41,35 +66,51 @@ export function ProjectsPage() {
         <h1 id="projects-title">All Projects</h1>
         <p>
           A selection of completed, in-progress, and planned projects across AI, data science,
-          econometrics, and software engineering. Use the tags to filter by topic and tech stack.
+          econometrics, and software engineering. Use the filters to narrow by topic, status, or stack.
         </p>
       </section>
 
       <div className="filter-panel" aria-label="Project filters">
         <div className="filter-panel-header">
           <span className="filter-label">Filter projects</span>
-          <p className="filter-hint">Narrow by tag.</p>
+          <p className="filter-hint">Narrow by topic, status, or stack.</p>
         </div>
-        <div className="tag-filter-list" style={{ marginTop: '0.85rem' }}>
-          {allTags.map(tag => {
-            const slug = tagSlug(tag)
-            const active = selectedTags.has(slug)
-            return (
-              <button
-                key={tag}
-                type="button"
-                className={`tag-filter${active ? ' active' : ''}`}
-                aria-pressed={active}
-                onClick={() => toggleTag(tag)}
-              >
-                {tag}
-              </button>
-            )
-          })}
+
+        <div className="filter-grid">
+          <label className="filter-field" htmlFor="topic-filter">
+            <span>Topic</span>
+            <select id="topic-filter" value={topic} onChange={e => setTopic(e.target.value)}>
+              <option value="">All topics</option>
+              {topicOptions.map(t => (
+                <option value={t} key={t}>{t}</option>
+              ))}
+            </select>
+          </label>
+
+          <label className="filter-field" htmlFor="status-filter">
+            <span>Status</span>
+            <select id="status-filter" value={status} onChange={e => setStatus(e.target.value)}>
+              <option value="">All statuses</option>
+              {Object.entries(STATUS_LABELS).map(([value, label]) => (
+                <option value={value} key={value}>{label}</option>
+              ))}
+            </select>
+          </label>
+
+          <label className="filter-field" htmlFor="stack-filter">
+            <span>Stack</span>
+            <select id="stack-filter" value={stack} onChange={e => setStack(e.target.value)}>
+              <option value="">All stacks</option>
+              {stackOptions.map(s => (
+                <option value={s} key={s}>{s}</option>
+              ))}
+            </select>
+          </label>
         </div>
-        {selectedTags.size > 0 && (
+
+        {hasFilters && (
           <div className="filter-actions">
-            <button type="button" className="filter-reset" onClick={() => setSelectedTags(new Set())}>
+            <button type="button" className="filter-reset" onClick={clearFilters}>
               Clear filters
             </button>
           </div>
@@ -80,11 +121,39 @@ export function ProjectsPage() {
         Showing {visible.length} of {projects.length} projects
       </p>
 
-      <div className="project-group-body">
-        {visible.map(project => (
-          <ProjectCard project={project} key={project.slug} />
-        ))}
-      </div>
+      {completed.length > 0 && (
+        <section className="project-group project-group--completed" aria-labelledby="completed-projects-title">
+          <div className="project-group-header">
+            <div>
+              <h3 id="completed-projects-title">Completed projects</h3>
+              <p>Finished work and the strongest evidence of what I can deliver end-to-end.</p>
+            </div>
+            <span className="project-group-pill">{completed.length} project{completed.length === 1 ? '' : 's'}</span>
+          </div>
+          <div className="project-group-body">
+            {completed.map(project => (
+              <ProjectCard project={project} key={project.slug} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {inProgressOrPlanned.length > 0 && (
+        <section className="project-group project-group--planned" aria-labelledby="exploring-projects-title">
+          <div className="project-group-header">
+            <div>
+              <h3 id="exploring-projects-title">In progress and planned</h3>
+              <p>Ideas and work-in-progress, kept separate so the finished projects stay dominant.</p>
+            </div>
+            <span className="project-group-pill">{inProgressOrPlanned.length} project{inProgressOrPlanned.length === 1 ? '' : 's'}</span>
+          </div>
+          <div className="project-group-body">
+            {inProgressOrPlanned.map(project => (
+              <ProjectCard project={project} key={project.slug} />
+            ))}
+          </div>
+        </section>
+      )}
     </main>
   )
 }

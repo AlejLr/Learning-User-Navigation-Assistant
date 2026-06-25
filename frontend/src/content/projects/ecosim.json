@@ -1,14 +1,51 @@
 {
   "slug": "ecosim",
-  "title": "EcoSim RL",
-  "status": "planned",
-  "stub": true,
+  "title": "EcoSim: Ecosystem Simulation for Environmental Policies using Reinforcement Learning",
+  "status": "completed",
+  "stub": false,
   "category": "project",
-  "tags": ["Reinforcement Learning", "Planned"],
-  "cardSummary": "Details coming soon.",
+  "tags": ["Reinforcement Learning", "AI / ML", "Research", "Bachelor Thesis", "Completed", "Solo project", "Python"],
+  "cardSummary": "Bachelor thesis comparing tabular Q-learning against classical Lotka-Volterra and Rosenzweig-MacArthur ODE models for predator-prey ecosystem simulation. Found that RL can learn meaningful local hunting and evasion behavior, but couldn't combine ecological realism, robustness, and stable coexistence in a single policy, a structural trade-off confirmed by fitting ODE models back onto the RL trajectories.",
   "hero": {
-    "description": "Details coming soon."
+    "description": "A LIACS (Leiden University) Bachelor thesis asking whether reinforcement learning can complement classical ecological models for environmental policy design. A grid-based multi-agent predator-prey simulator was built from scratch and its learned Q-learning policies were compared, both qualitatively and by fitting ODE models directly onto the RL population trajectories, against classical Lotka-Volterra and Rosenzweig-MacArthur baselines fitted to real historical datasets (Hudson Bay hare-lynx, Isle Royale wolf-moose).",
+    "kpis": [
+      { "label": "Supervisor", "value": "Prof. Aske Plaat, LIACS" },
+      { "label": "Evaluation", "value": "50 seeds x 2000-step rollouts" },
+      { "label": "Key finding", "value": "~120x equilibrium gap, RL vs. calibrated ODE" },
+      { "label": "Status", "value": "Thesis complete, grade pending" }
+    ]
   },
-  "links": [],
-  "sections": []
+  "links": [
+    { "label": "GitHub Repository", "url": "https://github.com/AlejLr/ecoSim" }
+  ],
+  "sections": [
+    {
+      "heading": "The question",
+      "body": "Environmental policy has traditionally relied on classical ecological models, ordinary differential equations like Lotka-Volterra and logistic growth. They're interpretable and mathematically tractable, but struggle with stochastic dynamics, nonlinear interactions, and adaptive behavior that real ecosystems constantly produce.\n\nReinforcement learning offers an alternative: agents that learn policies from environmental feedback rather than fixed equations, naturally suited to multi-agent settings where stability depends on the relationship between coexisting species. The thesis asked directly: **how effective are reinforcement learning methods, compared to classical ecological models, in supporting ecosystem policy design?**\n\nTwo sub-questions structured the work: how accurately can Q-learning agents reproduce predator-prey population dynamics compared to classical models, and how robust are RL-derived policies under noisy conditions, measured against conservation objectives like species survival?"
+    },
+    {
+      "heading": "What was built",
+      "body": "A 150x150 grid-world ecosystem simulator with predator and prey agents, built from scratch in Python:\n\n- **Agents:** shared base class with energy, position, and reproduction state; species-specific subclasses for feeding (prey eat grass, predators eat prey) and movement speed (predators move faster, at a higher energy cost).\n- **Partial observability:** each agent sees a 6-dimensional local observation (energy, distance/direction to its nearest relevant target, detection flags), discretized into a 540-state tabular space, not the full ecosystem state.\n- **Action space:** 8-directional movement plus eat and idle, shared across both species.\n- **Reward design:** an event-based per-step function combining a step penalty, feeding rewards, species-specific detection shaping (danger penalty for prey, opportunity bonus for predators), and reproduction/death terms.\n- **Training protocol:** a 1v1 warm-up stage to bootstrap basic pursuit/evasion, followed by an alternating multi-agent protocol (centralized training, decentralized execution) where predator and prey policies were refined against each other across multiple cycles.\n- **Classical baselines:** Lotka-Volterra and Rosenzweig-MacArthur ODE models, fitted via differential evolution to two real historical datasets (Hudson Bay hare-lynx, Isle Royale wolf-moose), plus an RL-calibrated ODE scenario translating the simulator's own parameters into classical terms."
+    },
+    {
+      "heading": "The central finding: three regimes, not one solution",
+      "body": "Across 50 evaluation seeds and 2000-step rollouts, three checkpoints from training revealed three distinct, incompatible trade-offs rather than a single improving trend:\n\n- **Run 48 cycle 2: fragile coexistence.** Mean coexistence score 0.381 (±0.391), both species survived in 31/50 seeds. The huge standard deviation, larger than the mean itself, means outcomes were sharply bimodal: either healthy coexistence or near-total predator collapse, with little in between.\n- **Run 48 cycle 3: ecologically meaningful overhunting.** This produced the most realistic spatial behavior observed, predators actively tracked prey across the entire habitat rather than exploiting any geometric shortcut. But it was too effective: only 4/50 seeds kept both species alive, the rest ended in prey extinction followed by predator decline.\n- **Run 50 cycle 3: best numbers, worst mechanism.** The strongest aggregate result, 96% survival, coexistence score 0.782 (±0.239), stable oscillations. But spatial density maps revealed why: prey and predators had both learned to concentrate in a single grid corner, a corner-trapping strategy exploiting the simulator's hard boundaries rather than genuine distributed ecological balance.\n\nNo checkpoint combined ecological plausibility, robustness, and stable coexistence at the same time. Each one solved part of the problem by failing differently at another part."
+    },
+    {
+      "heading": "The 120x discrepancy",
+      "body": "The most concrete result came from fitting a Rosenzweig-MacArthur ODE model directly onto the best RL trajectory (run 50 cycle 3) and comparing it to the RL-calibrated ODE built analytically from the simulator's own parameters under standard uniform-mixing assumptions.\n\nThe calibrated baseline, using the simulator's real attack rate, conversion efficiency, and mortality parameters, predicted a predator equilibrium of **P\\* ≈ 1.3**: under those energetics, predators should barely survive. The model fitted to the actual learned trajectory instead found **P\\* = 158.1**, roughly **120 times higher**.\n\nThat gap isn't a fitting error. It's direct quantitative evidence that the corner-trapping policy creates a far higher effective encounter rate than uniform mixing would ever produce, the RL agents weren't operating in the dynamical regime the classical model predicted from first principles, they'd found a structurally different one by exploiting the grid's geometry. A second result reinforced this: the fitted ODE predicted a stable node (smooth convergence, no oscillation), while the actual RL trajectory clearly oscillates, meaning those oscillations are stochastic demographic noise from individual births and deaths, not the deterministic ecological cycles classical models describe. Population-level resemblance to classical dynamics doesn't imply the same underlying mechanism."
+    },
+    {
+      "heading": "Why tabular Q-learning wasn't enough",
+      "body": "The diagnosis centers on the state representation. With only 540 discrete states, agents could encode coarse local information, energy, target direction, detection, but nothing about broader population balance, habitat-scale structure, or the long-term consequences of sustained predation. A predator could learn that hunting was immediately rewarding without any way to represent that persistent overhunting would eventually collapse the prey population it depended on.\n\nTwo further structural limits compounded this: the tabular framework scales poorly, richer observations would cause combinatorial state-space explosion; and the alternating training protocol meant predator and prey were always learning against a frozen snapshot of each other, never jointly converging, which explains why learned strategies proved brittle once evaluated under full joint dynamics."
+    },
+    {
+      "heading": "Answer to the research question",
+      "body": "Mixed, with real substance on both sides. RL was effective enough to learn meaningful local pursuit, evasion, and feeding behavior, and in the best case, population-level patterns that superficially resembled classical ecological cycles. It was not effective enough to combine ecological realism, robustness, and stable coexistence within one learned policy, the three checkpoints expressed three separate, incompatible trade-offs rather than converging on a single satisfactory solution.\n\nThe classical ODE baselines remained more interpretable and analytically coherent throughout, including on their own terms: the Isle Royale case study showed fixed-parameter ODEs fail under real structural disruptions like historical population crashes, a limitation of classical modeling the thesis surfaces too. The conclusion isn't that RL is unsuitable for ecological modeling. It's that tabular Q-learning, in this state representation, functions as a complementary diagnostic tool for exposing failure modes aggregate equations cannot represent, rather than as a policy-ready replacement for them. Future work would mean richer observations (density fields, boundary awareness), function approximation (deep RL, e.g. PPO) instead of tabular states, and removing the hard grid boundaries that made corner-trapping possible in the first place."
+    },
+    {
+      "heading": "What this project shows",
+      "body": "- Designing and implementing a non-trivial multi-agent RL environment from scratch: agents, partial observability, reward shaping, and a two-stage training protocol.\n- Rigorous comparative methodology: fitting classical ODE models to real historical ecological data, building an analytical baseline from the simulator's own parameters, then fitting that same ODE framework back onto learned RL trajectories to get a quantitative, falsifiable comparison rather than a qualitative impression.\n- Honest scientific interpretation: identifying that the best-performing checkpoint by the numbers was succeeding for the wrong reason (corner-trapping), and explaining precisely why, rather than reporting the highest score as the result.\n- Translating a vague, open-ended research question into a structured, falsifiable comparative study with concrete, defensible conclusions."
+    }
+  ]
 }

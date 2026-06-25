@@ -1,0 +1,53 @@
+{
+  "notes": [
+    { "topic": "Hobbies", "detail": "I really like reading fiction novels and books, especially mystery and science fiction, I always like a good dystopian story. I also enjoy hanging out with my friends which, although a classic, might be my favorite way to spend time. Furthermore, I also like learning and building projects, I am interested in learning robotics and product design so I can build things recreationally. I also love drawing and watching movies and shows, I am a Letterboxd amateur." },
+    { "topic": "Work style", "detail": "I would say I approach problems systematically, in a roadmap style. Every time I have to solve a new challenge, I always break it down into the smallest pieces, and create a generic solution skeleton, which I then adapt to multiple ideas. I often contact a lot of friends and colleagues for feedback on the different ideas and then decide the final track I will continue. Therefore, I always have the problem perfectly defined before actually starting with the solution." },
+    { "topic": "Motivation", "detail": "I really enjoy the process of solving complex problems and, even more, creating creative solutions. I consider myself a really creative person, and I found in data science and AI the possibility to create endless projects and products, and pretty much make anything I can think of. I also want my future job to be rewarding and fulfilling, and I find a future in which my job tackles that creative side of me an objective in life." },
+    { "topic": "LinkedIn", "detail": "https://www.linkedin.com/in/alejandro-lopez-967546263/" },
+    { "topic": "GitHub", "detail": "https://github.com/AlejLr" },
+    { "topic": "Email", "detail": "alej.lopez.ruiz@gmail.com" }
+  ],
+  "education": [
+    {
+      "institution": "Leiden University",
+      "degree": "BSc Data Science and Artificial Intelligence",
+      "dates": "Expected July 2026",
+      "detail": "Coursework: Machine Learning, Deep Learning, Databases, Statistics, Cybersecurity, Algorithms, Reinforcement Learning, Computer Vision, Natural Language Processing, and Data Visualization. Minor in Economics: Microeconomics, Macroeconomics, Finance, and Applied Data Science and Econometrics projects."
+    },
+    {
+      "institution": "University of Amsterdam (UvA)",
+      "degree": "Premaster Business Analytics & Data Science",
+      "dates": "Starting September 2026",
+      "detail": "Bridge program toward a Master's in Business Analytics."
+    },
+    {
+      "institution": "Agora Lledo International School",
+      "degree": "International Baccalaureate, Bilingual Diploma",
+      "dates": "2021 - 2023",
+      "detail": ""
+    }
+  ],
+  "workExperience": [
+    {
+      "role": "Crew Trainer",
+      "organization": "McDonald's",
+      "dates": "April 2024 - Present",
+      "detail": "Promoted to Crew Trainer in October 2024 after demonstrating reliability, teamwork, and operational responsibility. Trains and mentors new staff while supporting team coordination, guest experience, food safety, hygiene standards, and rule compliance in a high-pressure, fast-paced service environment."
+    }
+  ],
+  "skills": {
+    "Programming & Data": ["Python", "SQL", "Java", "JavaScript", "HTML/CSS", "Pandas", "NumPy", "Jupyter", "Stata"],
+    "Machine Learning & AI": ["PyTorch", "Supervised/unsupervised learning", "Model evaluation", "Hyperparameter optimization", "Computer vision", "NLP", "Transformers", "Hugging Face"],
+    "Visualization & Analytics": ["Matplotlib", "Seaborn", "Streamlit", "Dashboards", "Data storytelling", "Regression analysis", "Econometrics"],
+    "Software & Tools": ["Git", "Docker", "Linux", "REST APIs", "Flask", "FastAPI", "React", "Vite", "Google Cloud Run"]
+  },
+  "languages": [
+    { "name": "English", "level": "Professional working proficiency (C1)" },
+    { "name": "Spanish", "level": "Native" },
+    { "name": "Dutch", "level": "Beginner" }
+  ],
+  "academicHighlights": [
+    "Chest X-ray CNN and explainable AI (XAI) project: manually tuned model reached 94% accuracy and 0.96 recall on the pneumonia class.",
+    "Dashboard assignment graded 9.8; convolutional neural network for video analysis project graded 9.3."
+  ]
+}

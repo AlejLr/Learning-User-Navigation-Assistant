@@ -1,8 +1,0 @@
-{
-  "notes": [
-    { "topic": "Hobbies", "detail": "What you actually do outside of work, e.g. sports, music, gaming." },
-    { "topic": "Work style", "detail": "How you actually approach problems day to day, e.g. how you debug, how you plan, what frustrates you." },
-    { "topic": "Motivation", "detail": "Why you do this. What got you into Data Science and AI in the first place." },
-    { "topic": "Fun fact", "detail": "Something memorable that a recruiter would enjoy learning, not on your CV." }
-  ]
-}

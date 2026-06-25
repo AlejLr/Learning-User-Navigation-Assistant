@@ -20,7 +20,10 @@ app = FastAPI(title="LUNA Portfolio Assistant", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://alejlr.vercel.app",
+        "http://localhost:5173",
+    ],
     allow_methods=["*"],
     allow_headers=["*"],
 )

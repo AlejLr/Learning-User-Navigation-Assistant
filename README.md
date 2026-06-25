@@ -4,6 +4,8 @@
 
 Not a demo — an AI experience meant to live permanently on my portfolio site, acting as a spokesperson and guide for visitors (especially recruiters ;) ). A RAG-based conversational agent that answers questions about my projects and background, with the long-term goal of speaking, navigating the site, and showing context while it talks.
 
+Live Portfolio: https://alejlr.vercel.app/
+
 ---
 
 ## How it works
@@ -34,16 +36,16 @@ User sends a question → backend embeds it → retrieves relevant chunks from t
 - FastAPI `/chat` endpoint, RAG pipeline (ChromaDB's built-in ONNX embedder), Claude Haiku response
 - Persona: LUNA, portfolio assistant
 
-### Phase 2 — Extended prototype (in progress)
-- [x] Multi-turn conversation (history capped at last 6 messages, client-held)
-- [x] Persona switching: professional vs casual tone
-- [x] MCP server wired into `/chat`, spawned as a subprocess and called by Claude as a real tool
-- [x] React chat UI (Vite + TypeScript), now at its own `/chat` route, plus a floating widget on the portfolio
-- [x] Real portfolio content migrated into the React app (`/`, `/projects`, `/projects/:slug`)
-- [x] Backend deployed on Render: https://luna-kg96.onrender.com
-- [ ] Frontend deployed on Vercel, CORS locked to the production domain
+### Phase 2 — Extended prototype (done)
+-  Multi-turn conversation (history capped at last 6 messages, client-held)
+-  Persona switching: professional vs casual tone
+-  MCP server wired into `/chat`, spawned as a subprocess and called by Claude as a real tool
+-  React chat UI (Vite + TypeScript), now at its own `/chat` route, plus a floating widget on the portfolio
+-  Real portfolio content migrated into the React app (`/`, `/projects`, `/projects/:slug`)
+-  Backend deployed on Render: https://luna-kg96.onrender.com
+-  Frontend deployed on Vercel, CORS locked to the production domain: https://alejlr.vercel.app/
 
-### Phase 3 — Full product
+### Phase 3 — Full product (in progress)
 - Voice output via TTS
 - Agent-controlled frontend navigation (LUNA scrolls/routes the portfolio while talking, synchronized with speech)
 - Full MCP tool integration (navigation tools, not just data lookup)

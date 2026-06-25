@@ -25,8 +25,38 @@ def _flatten_courses(data: list) -> str:
     return "\n\n".join(f"{c['name']} ({c['badge']}): {c['detail']}" for c in data)
 
 
-def _flatten_personal(data: dict) -> str:
+def _flatten_notes(data: dict) -> str:
     return "\n\n".join(f"{note['topic']}: {note['detail']}" for note in data.get("notes", []))
+
+
+def _flatten_education(data: dict) -> str:
+    entries = data.get("education", [])
+    return "\n\n".join(
+        f"{e['degree']} at {e['institution']} ({e['dates']}). {e.get('detail', '')}".strip()
+        for e in entries
+    )
+
+
+def _flatten_work_experience(data: dict) -> str:
+    entries = data.get("workExperience", [])
+    return "\n\n".join(
+        f"{e['role']} at {e['organization']} ({e['dates']}). {e.get('detail', '')}".strip()
+        for e in entries
+    )
+
+
+def _flatten_skills(data: dict) -> str:
+    skills = data.get("skills", {})
+    return "\n".join(f"{category}: {', '.join(items)}" for category, items in skills.items())
+
+
+def _flatten_languages(data: dict) -> str:
+    languages = data.get("languages", [])
+    return ", ".join(f"{lang['name']} ({lang['level']})" for lang in languages)
+
+
+def _flatten_academic_highlights(data: dict) -> str:
+    return "\n".join(data.get("academicHighlights", []))
 
 
 def ingest() -> None:
@@ -64,14 +94,25 @@ def ingest() -> None:
             ids.append("courses")
             metadatas.append({"title": "Courses & Certifications"})
 
-    personal_file = settings.private_content_path / "personal.json"
-    if personal_file.exists():
-        data = json.loads(personal_file.read_text(encoding="utf-8"))
-        body = _flatten_personal(data)
-        if body:
-            documents.append(body)
-            ids.append("personal")
-            metadatas.append({"title": "Personal context"})
+    extra_info_file = settings.extra_info_path / "extra_info.json"
+    if extra_info_file.exists():
+        data = json.loads(extra_info_file.read_text(encoding="utf-8"))
+
+        for doc_id, title, flattener in [
+            ("extra_notes", "Extra info about Alejandro", _flatten_notes),
+            ("extra_education", "Education and academic background, university, degree", _flatten_education),
+            ("extra_work_experience", "Work experience, employment history", _flatten_work_experience),
+            ("extra_skills", "Technical skills", _flatten_skills),
+            ("extra_languages", "Languages spoken", _flatten_languages),
+            ("extra_highlights", "Academic highlights, grades", _flatten_academic_highlights),
+        ]:
+            body = flattener(data)
+            if body:
+                # Prefixing with the topic in plain words measurably improves
+                # embedding relevance for short factual documents like these.
+                documents.append(f"{title}:\n\n{body}")
+                ids.append(doc_id)
+                metadatas.append({"title": title})
 
     if documents:
         collection.add(documents=documents, ids=ids, metadatas=metadatas)

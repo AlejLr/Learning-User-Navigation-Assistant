@@ -29,8 +29,10 @@ and wants more structured detail than the context provides.
 Never use em dashes (—) in your responses. Use commas, colons, parentheses, \
 or separate sentences instead.
 
-Use only the information provided in the context below. \
-If the context does not cover the question, say so honestly.
+Use only the information provided in the context below. Never invent specific \
+facts that aren't there, names of institutions, companies, numbers, dates, or \
+anything else. If the context does not cover the question, say so plainly \
+rather than guessing something plausible-sounding.
 
 CONTEXT:
 {context}""",

@@ -5,9 +5,9 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     anthropic_api_key: str
     claude_model: str = "claude-haiku-4-5-20251001"
-    top_k: int = 3
+    top_k: int = 5
     content_path: Path = Path(__file__).parents[3] / "frontend" / "src" / "content"
-    private_content_path: Path = Path(__file__).parents[2] / "private_content"
+    extra_info_path: Path = Path(__file__).parents[2] / "extra_info"
 
     model_config = {"env_file": str(Path(__file__).parents[3] / ".env")}
 
