@@ -10,7 +10,7 @@ import './ChatWidget.css'
 export function ChatWidget() {
   const [open, setOpen] = useState(false)
   const [hasOpenedOnce, setHasOpenedOnce] = useState(false)
-  const { messages, sources, persona, setPersona, loading, send } = useChat()
+  const { messages, persona, setPersona, loading, send } = useChat()
 
   // Wake a sleeping Render free-tier instance as soon as someone lands on the
   // page, not just when they open the chat, most visitors read for a few
