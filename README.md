@@ -37,11 +37,11 @@ User sends a question → backend embeds it → retrieves relevant chunks from t
 ### Phase 2 — Extended prototype (in progress)
 - [x] Multi-turn conversation (history capped at last 6 messages, client-held)
 - [x] Persona switching: professional vs casual tone
-- [x] MCP server skeleton with `project_metadata` tool (standalone, not yet wired into `/chat`)
-- [x] React chat UI (Vite + TypeScript), now at its own `/chat` route
+- [x] MCP server wired into `/chat`, spawned as a subprocess and called by Claude as a real tool
+- [x] React chat UI (Vite + TypeScript), now at its own `/chat` route, plus a floating widget on the portfolio
 - [x] Real portfolio content migrated into the React app (`/`, `/projects`, `/projects/:slug`)
-- [x] Wire the MCP server into `/chat` so LUNA can call `project_metadata` as a tool during conversations
-- [ ] Deploy: backend on Render, frontend on Vercel, CORS locked to the production domain
+- [x] Backend deployed on Render: https://luna-kg96.onrender.com
+- [ ] Frontend deployed on Vercel, CORS locked to the production domain
 
 ### Phase 3 — Full product
 - Voice output via TTS
