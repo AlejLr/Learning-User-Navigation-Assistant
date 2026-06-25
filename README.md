@@ -46,10 +46,12 @@ User sends a question → backend embeds it → retrieves relevant chunks from t
 -  Frontend deployed on Vercel, CORS locked to the production domain: https://alejlr.vercel.app/
 
 ### Phase 3 — Full product (in progress)
-- Voice output via TTS
-- Agent-controlled frontend navigation (LUNA scrolls/routes the portfolio while talking, synchronized with speech)
-- Full MCP tool integration (navigation tools, not just data lookup)
+- Streaming responses (SSE) — needed as a prerequisite for real-time voice + navigation, not just a nicer chat UX
+- Voice output via TTS, provider TBD (browser `SpeechSynthesis` vs a hosted API like ElevenLabs/OpenAI TTS — tradeoff is cost/latency vs voice quality)
+- Agent-controlled frontend navigation: new MCP tools (e.g. `navigate_to(slug)`, `scroll_to(section)`) that the frontend executes when called, not just data-lookup tools
+- Speech/navigation sync: define whether actions fire as the response streams in or after a full response is generated and sequenced
 - Advanced retrieval: chunking, reranking, summary-compressed history
+- Fallback UX for TTS/autoplay failures (notably mobile autoplay restrictions)
 
 ---
 

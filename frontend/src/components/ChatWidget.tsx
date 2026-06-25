@@ -40,13 +40,6 @@ export function ChatWidget() {
 
           <ChatWindow messages={messages} loading={loading} />
 
-          {sources.length > 0 && (
-            <div className="sources">
-              <span>Sources: </span>
-              {sources.join(' · ')}
-            </div>
-          )}
-
           <ChatInput onSend={send} disabled={loading} />
         </div>
       ) : (
