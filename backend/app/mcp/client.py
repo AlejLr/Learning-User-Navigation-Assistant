@@ -7,6 +7,7 @@ pattern Claude Desktop uses to talk to local MCP servers. The session stays
 open for the lifetime of the app and is reused across every /chat request.
 """
 
+import os
 import sys
 from contextlib import AsyncExitStack
 
@@ -25,6 +26,11 @@ async def connect() -> None:
     server_params = StdioServerParameters(
         command=sys.executable,
         args=["-m", "app.mcp.server"],
+        # By default the MCP SDK only forwards a safe allowlist of env vars
+        # (PATH, HOME, etc.) to the spawned subprocess, deliberately excluding
+        # secrets. This is our own trusted server, so pass everything through,
+        # including ANTHROPIC_API_KEY, which it needs to construct Settings().
+        env=dict(os.environ),
     )
     read, write = await _exit_stack.enter_async_context(stdio_client(server_params))
     _session = await _exit_stack.enter_async_context(ClientSession(read, write))
