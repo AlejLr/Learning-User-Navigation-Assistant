@@ -1,17 +1,43 @@
-from fastapi import APIRouter
+import json
 
-from app.models.schemas import ChatRequest, ChatResponse
-from app.services import llm, retrieval
+from fastapi import APIRouter, Response
+from fastapi.responses import StreamingResponse
+
+from app.models.schemas import ChatRequest, Message, TTSRequest
+from app.services import llm, retrieval, tts
 
 router = APIRouter()
 
 
-@router.post("/chat", response_model=ChatResponse)
-async def chat(request: ChatRequest) -> ChatResponse:
+@router.post("/chat")
+async def chat(request: ChatRequest) -> StreamingResponse:
     chunks, sources = retrieval.retrieve(request.message)
-    response_text = await llm.chat(request.message, chunks, request.history, request.persona)
-    updated_history = request.history + [
-        {"role": "user", "content": request.message},
-        {"role": "assistant", "content": response_text},
-    ]
-    return ChatResponse(response=response_text, sources=sources, history=updated_history)
+
+    async def event_stream():
+        full_response = ""
+        async for token in llm.chat_stream(
+            request.message, chunks, request.history, request.persona, request.voice_mode
+        ):
+            full_response += token
+            yield f"data: {json.dumps({'type': 'token', 'text': token})}\n\n"
+
+        updated_history = request.history + [
+            Message(role="user", content=request.message),
+            Message(role="assistant", content=full_response),
+        ]
+        done_payload = {
+            "type": "done",
+            "sources": sources,
+            "history": [m.model_dump() for m in updated_history],
+        }
+        yield f"data: {json.dumps(done_payload)}\n\n"
+
+    return StreamingResponse(event_stream(), media_type="text/event-stream")
+
+
+@router.post("/tts")
+def text_to_speech(request: TTSRequest) -> Response:
+    audio = tts.synthesize(request.text)
+    if not audio:
+        return Response(status_code=204)
+    return Response(content=audio, media_type="audio/mpeg")

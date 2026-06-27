@@ -25,6 +25,7 @@ User sends a question → backend embeds it → retrieves relevant chunks from t
 | Embeddings | ChromaDB built-in ONNX embedder (`all-MiniLM-L6-v2`, no PyTorch) |
 | Vector store | ChromaDB (in-memory) |
 | Tool protocol | MCP (`mcp` Python SDK) |
+| Voice | Google Cloud Text-to-Speech (Neural2) |
 | Package manager | uv (backend), npm (frontend) |
 | Frontend | Vite + React + TypeScript + React Router |
 
@@ -46,8 +47,8 @@ User sends a question → backend embeds it → retrieves relevant chunks from t
 -  Frontend deployed on Vercel, CORS locked to the production domain: https://alejlr.vercel.app/
 
 ### Phase 3 — Full product (in progress)
-- Streaming responses (SSE) — needed as a prerequisite for real-time voice + navigation, not just a nicer chat UX
-- Voice output via TTS, provider TBD (browser `SpeechSynthesis` vs a hosted API like ElevenLabs/OpenAI TTS — tradeoff is cost/latency vs voice quality)
+- Streaming responses (SSE) — done, needed as a prerequisite for real-time voice + navigation, not just a nicer chat UX
+- Voice output via Google Cloud TTS — done, opt-in toggle, sentence-chunked so speech starts before the full reply has streamed in
 - Agent-controlled frontend navigation: new MCP tools (e.g. `navigate_to(slug)`, `scroll_to(section)`) that the frontend executes when called, not just data-lookup tools
 - Speech/navigation sync: define whether actions fire as the response streams in or after a full response is generated and sequenced
 - Advanced retrieval: chunking, reranking, summary-compressed history
@@ -88,6 +89,7 @@ User sends a question → backend embeds it → retrieves relevant chunks from t
 cd backend
 uv sync
 cp ../.env.example ../.env   # add your ANTHROPIC_API_KEY
+# voice requires a Google Cloud service account key at backend/secrets/google-tts-credentials.json (gitignored, not committed)
 uv run uvicorn app.main:app --reload
 ```
 

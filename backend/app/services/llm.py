@@ -59,10 +59,40 @@ CONTEXT:
 {context}""",
 }
 
+_VOICE_MODE_ADDENDUM = """
 
-async def chat(message: str, context_chunks: list[str], history: list[Message], persona: str = "professional") -> str:
+The user is listening to your response via text-to-speech, not reading it. \
+Keep answers to 1-3 short, spoken-style sentences. Never use bullet points, \
+markdown formatting, or headers, they get read aloud as literal symbols. \
+Talk the way you'd actually explain something out loud to a person standing \
+in front of you, not the way you'd write a report.
+
+Additionally, prefix every single sentence with exactly one tag in curly \
+braces, chosen from: {explaining}, {happy}, {chill}, {skeptical}, {surprised}. \
+This drives a visual avatar, so tag every sentence with no exceptions.
+- {explaining}: normal informative content, the default for most sentences.
+- {happy}: warm, enthusiastic, or genuinely positive moments.
+- {chill}: casual filler, small talk, greetings, sign-offs.
+- {skeptical}: you're uncertain, or the context doesn't cover something.
+- {surprised}: a brief one-sentence reaction when a question is unexpected \
+or surprising, always immediately followed by {explaining} sentences for \
+the actual answer. Don't overuse it, only for genuinely surprising questions.
+
+Example: "{surprised} Oh, nobody's asked me that before! {explaining} Let me \
+walk you through it."""
+
+
+async def chat_stream(
+    message: str,
+    context_chunks: list[str],
+    history: list[Message],
+    persona: str = "professional",
+    voice_mode: bool = False,
+):
     context = "\n\n---\n\n".join(context_chunks)
     system_prompt = _SYSTEM_PROMPTS.get(persona, _SYSTEM_PROMPTS["professional"]).format(context=context)
+    if voice_mode:
+        system_prompt += _VOICE_MODE_ADDENDUM
     trimmed = history[-MAX_HISTORY:]
     messages = [{"role": m.role, "content": m.content} for m in trimmed]
     messages.append({"role": "user", "content": message})
@@ -70,21 +100,24 @@ async def chat(message: str, context_chunks: list[str], history: list[Message], 
     tools = await mcp_client.list_tools()
 
     for _ in range(MAX_TOOL_ROUNDS):
-        response = await _client.messages.create(
+        async with _client.messages.stream(
             model=settings.claude_model,
             max_tokens=500,
             system=system_prompt,
             messages=messages,
             tools=tools,
-        )
+        ) as stream:
+            async for text in stream.text_stream:
+                yield text
+            final_message = await stream.get_final_message()
 
-        if response.stop_reason != "tool_use":
-            return "".join(block.text for block in response.content if block.type == "text")
+        if final_message.stop_reason != "tool_use":
+            return
 
-        messages.append({"role": "assistant", "content": response.content})
+        messages.append({"role": "assistant", "content": final_message.content})
 
         tool_results = []
-        for block in response.content:
+        for block in final_message.content:
             if block.type != "tool_use":
                 continue
             result_text = await mcp_client.call_tool(block.name, block.input)
@@ -95,4 +128,4 @@ async def chat(message: str, context_chunks: list[str], history: list[Message], 
             })
         messages.append({"role": "user", "content": tool_results})
 
-    return "I looked into that longer than I should have. Could you rephrase the question?"
+    yield "I looked into that longer than I should have. Could you rephrase the question?"

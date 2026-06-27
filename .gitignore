@@ -13,6 +13,7 @@ __pycache__/
 !.env.example
 *.pyc
 backend/app/db/vector_store/
+backend/secrets/
 frontend/node_modules/
 frontend/dist/
 .DS_Store

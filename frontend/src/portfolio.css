@@ -600,6 +600,9 @@ footer {
   display: grid;
   justify-items: center;
   gap: 0.45rem;
+  color: var(--accent-dark);
+  text-decoration: none;
+  font-weight: 700;
 }
 
 .contact-icon {
@@ -608,13 +611,7 @@ footer {
   object-fit: contain;
 }
 
-.contact-item a {
-  color: var(--accent-dark);
-  text-decoration: none;
-  font-weight: 700;
-}
-
-.contact-item a:hover {
+.contact-item:hover {
   text-decoration: underline;
 }
 

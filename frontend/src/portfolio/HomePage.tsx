@@ -72,18 +72,18 @@ export function HomePage() {
       <section id="contact" className="container">
         <h2>Contact</h2>
         <div className="contact-grid" aria-label="Contact links">
-          <div className="contact-item">
+          <a className="contact-item" href={`mailto:${about.contact.email}`}>
             <img className="contact-icon" src="/assets/icon/email.png" alt="Email icon" />
-            <a href={`mailto:${about.contact.email}`}>Email</a>
-          </div>
-          <div className="contact-item">
+            Email
+          </a>
+          <a className="contact-item" href={about.contact.github} target="_blank" rel="noopener noreferrer">
             <img className="contact-icon" src="/assets/icon/GitHub.png" alt="GitHub icon" />
-            <a href={about.contact.github} target="_blank" rel="noopener noreferrer">GitHub</a>
-          </div>
-          <div className="contact-item">
+            GitHub
+          </a>
+          <a className="contact-item" href={about.contact.linkedin} target="_blank" rel="noopener noreferrer">
             <img className="contact-icon" src="/assets/icon/linkedin.png" alt="LinkedIn icon" />
-            <a href={about.contact.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
-          </div>
+            LinkedIn
+          </a>
         </div>
       </section>
     </main>

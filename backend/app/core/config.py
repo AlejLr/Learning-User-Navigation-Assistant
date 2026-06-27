@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     top_k: int = 5
     content_path: Path = Path(__file__).parents[3] / "frontend" / "src" / "content"
     extra_info_path: Path = Path(__file__).parents[2] / "extra_info"
+    google_tts_credentials_path: Path = Path(__file__).parents[2] / "secrets" / "google-tts-credentials.json"
 
     model_config = {"env_file": str(Path(__file__).parents[3] / ".env")}
 
