@@ -55,6 +55,9 @@ User sends a question → backend embeds it → retrieves relevant chunks from t
 - Avatar/expression system: Claude tags each spoken sentence ({explaining}/{happy}/{chill}/{skeptical}/{surprised}) to drive a live avatar, plus client-driven states (greeting/curious/thinking)
 - Agent-controlled navigation and highlighting: Claude writes inline `[nav:slug]` / `[highlight:id]` / `[scroll:section]` directives next to each sentence's mood tag. These are parsed client-side and fired in sync with that sentence's *TTS playback*, not its generation, so a page jump or highlight always lands exactly as it's being talked about. Navigates as soon as a project becomes the topic; highlights every section/KPI a stated fact traces back to (e.g. challenge, then solution, then results, in order, as it explains)
 
+**Remaining:**
+- Advanced retrieval: chunking, reranking, summary-compressed history (low priority at current traffic/conversation length)
+- A visible fallback when TTS itself fails outright (mobile autoplay is already handled via an audio-unlock on first gesture)
 
 ---
 

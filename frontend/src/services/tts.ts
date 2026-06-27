@@ -61,6 +61,19 @@ export function onPageAction(listener: PageActionListener): () => void {
   return () => pageActionListeners.delete(listener)
 }
 
+type FailureListener = () => void
+const failureListeners = new Set<FailureListener>()
+
+function emitTTSFailure(): void {
+  failureListeners.forEach(listener => listener())
+}
+
+/** Subscribes to TTS synthesis/playback failures, e.g. to show a fallback notice. */
+export function onTTSFailure(listener: FailureListener): () => void {
+  failureListeners.add(listener)
+  return () => failureListeners.delete(listener)
+}
+
 let audioUnlocked = false
 
 /**
@@ -145,7 +158,11 @@ function speakSentence(text: string, tag: AvatarTag | null, action: PageAction |
     if (tag === 'surprised') await wait(SURPRISED_PREROLL_MS)
     if (mySession !== sessionId || !text.trim()) return
     const url = await fetchAudioUrl(text)
-    if (!url || mySession !== sessionId) return
+    if (mySession !== sessionId) return
+    if (!url) {
+      emitTTSFailure()
+      return
+    }
     await playUrl(url, mySession)
   })
 }

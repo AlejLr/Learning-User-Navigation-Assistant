@@ -17,7 +17,7 @@ export function ChatWidget() {
   const [open, setOpen] = useState(false)
   const [hasOpenedOnce, setHasOpenedOnce] = useState(false)
   const [mode, setMode] = useState<Mode>(null)
-  const { messages, persona, setPersona, loading, send, setVoiceEnabled, avatarState, setIsTyping, toast } =
+  const { messages, persona, setPersona, loading, send, greet, setVoiceEnabled, avatarState, setIsTyping, toast } =
     useChat()
 
   // Wake a sleeping Render free-tier instance as soon as someone lands on the
@@ -42,7 +42,10 @@ export function ChatWidget() {
   function handleSelectMode(selected: 'chat' | 'agent') {
     setMode(selected)
     setVoiceEnabled(selected === 'agent')
-    if (selected === 'agent') unlockAudio()
+    if (selected === 'agent') {
+      unlockAudio()
+      greet()
+    }
   }
 
   function handleChangeMode() {
