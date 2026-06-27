@@ -1,4 +1,5 @@
 import { useRef, useState, type KeyboardEvent } from 'react'
+import { unlockAudio } from '../services/tts'
 
 const TYPING_IDLE_MS = 1500
 
@@ -28,6 +29,7 @@ export function ChatInput({ onSend, disabled, onTypingChange }: Props) {
   function handleSend() {
     if (!value.trim()) return
     if (idleTimer.current) clearTimeout(idleTimer.current)
+    unlockAudio()
     onSend(value)
     setValue('')
     onTypingChange?.(false)

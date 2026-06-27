@@ -1,6 +1,7 @@
 import { useParams, Link } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
 import { getProjectBySlug } from '../content/projects'
+import { slugify } from '../utils/slugify'
 
 export function ProjectPage() {
   const { slug } = useParams<{ slug: string }>()
@@ -30,7 +31,7 @@ export function ProjectPage() {
         {project.hero.kpis && (
           <div className="kpi-grid">
             {project.hero.kpis.map(kpi => (
-              <div className="kpi" key={kpi.label}>
+              <div className="kpi" id={slugify(kpi.label)} key={kpi.label}>
                 <div className="label">{kpi.label}</div>
                 <div className="value">{kpi.value}</div>
               </div>
@@ -56,7 +57,7 @@ export function ProjectPage() {
         </section>
       ) : (
         project.sections.map(section => (
-          <section className="card" key={section.heading}>
+          <section className="card" id={slugify(section.heading)} key={section.heading}>
             <h3>{section.heading}</h3>
             <ReactMarkdown>{section.body}</ReactMarkdown>
           </section>

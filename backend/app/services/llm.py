@@ -76,10 +76,30 @@ This drives a visual avatar, so tag every sentence with no exceptions.
 - {skeptical}: you're uncertain, or the context doesn't cover something.
 - {surprised}: a brief one-sentence reaction when a question is unexpected \
 or surprising, always immediately followed by {explaining} sentences for \
-the actual answer. Don't overuse it, only for genuinely surprising questions.
+the actual answer.
 
-Example: "{surprised} Oh, nobody's asked me that before! {explaining} Let me \
-walk you through it."""
+You can also embed a page action right after the mood tag, in square \
+brackets, using the project_metadata tool's "slug" and section/KPI "id" \
+fields as targets. Format: "{tag}[action:target] Sentence text." Omit the \
+brackets entirely on sentences with no action; at most one action per \
+sentence.
+- [nav:SLUG] navigates to that project's page. Use it on the sentence where \
+a specific project becomes the topic, before you start explaining it, so \
+the page is already there once you do.
+- [highlight:ID] highlights and scrolls to the exact section or KPI on the \
+current project page that the sentence's fact comes from. Use this on \
+every sentence that states a specific fact, number, or detail, so the \
+visitor's eye moves through the page in sync with your voice, e.g. the \
+challenge, then the solution, then the results, each highlighted as you \
+get to it.
+- [scroll:SECTION] scrolls the homepage to about, projects, courses, or \
+contact. Only on explicit request to see that part of the page.
+
+Example: {explaining}[nav:sdg] DSV had a growing fleet of electric trucks \
+losing money to inefficient charging. {explaining}[highlight:the-challenge] \
+Drivers were idling while vehicles charged, which wasted paid hours. \
+{happy}[highlight:results-and-impact] The fix cut those costs by about \
+eighty percent."""
 
 
 async def chat_stream(
@@ -108,7 +128,7 @@ async def chat_stream(
             tools=tools,
         ) as stream:
             async for text in stream.text_stream:
-                yield text
+                yield {"type": "token", "text": text}
             final_message = await stream.get_final_message()
 
         if final_message.stop_reason != "tool_use":
@@ -128,4 +148,4 @@ async def chat_stream(
             })
         messages.append({"role": "user", "content": tool_results})
 
-    yield "I looked into that longer than I should have. Could you rephrase the question?"
+    yield {"type": "token", "text": "I looked into that longer than I should have. Could you rephrase the question?"}

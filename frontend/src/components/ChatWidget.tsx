@@ -4,9 +4,10 @@ import { ChatInput } from './ChatInput'
 import { PersonaToggle } from './PersonaToggle'
 import { ModeSelect } from './ModeSelect'
 import { AgentAvatar } from './AgentAvatar'
+import { Toast } from './Toast'
 import { useChat } from '../hooks/useChat'
 import { warmUp } from '../api/chat'
-import { stopSpeaking } from '../services/tts'
+import { stopSpeaking, unlockAudio } from '../services/tts'
 import '../App.css'
 import './ChatWidget.css'
 
@@ -16,7 +17,8 @@ export function ChatWidget() {
   const [open, setOpen] = useState(false)
   const [hasOpenedOnce, setHasOpenedOnce] = useState(false)
   const [mode, setMode] = useState<Mode>(null)
-  const { messages, persona, setPersona, loading, send, setVoiceEnabled, avatarState, setIsTyping } = useChat()
+  const { messages, persona, setPersona, loading, send, greet, setVoiceEnabled, avatarState, setIsTyping, toast } =
+    useChat()
 
   // Wake a sleeping Render free-tier instance as soon as someone lands on the
   // page, not just when they open the chat, most visitors read for a few
@@ -40,6 +42,10 @@ export function ChatWidget() {
   function handleSelectMode(selected: 'chat' | 'agent') {
     setMode(selected)
     setVoiceEnabled(selected === 'agent')
+    if (selected === 'agent') {
+      unlockAudio()
+      greet()
+    }
   }
 
   function handleChangeMode() {
@@ -71,6 +77,7 @@ export function ChatWidget() {
           ) : (
             <>
               {mode === 'agent' && <AgentAvatar state={avatarState} />}
+              <Toast message={toast} />
               <ChatWindow messages={messages} loading={loading} />
               <ChatInput onSend={send} disabled={loading} onTypingChange={setIsTyping} />
             </>

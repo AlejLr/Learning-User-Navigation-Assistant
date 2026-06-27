@@ -358,6 +358,13 @@ footer {
   box-shadow: var(--shadow-sm);
   margin-bottom: 1rem;
 }
+
+/* LUNA agent-mode highlight: flashes the section/KPI a fact came from */
+.luna-highlight {
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px var(--accent-soft) !important;
+}
 .card h3 {
   margin-top: 0;
   margin-bottom: 0.65rem;
