@@ -12,9 +12,8 @@ class ChatRequest(BaseModel):
     message: str
     history: list[Message] = []
     persona: Literal["professional", "casual"] = "professional"
+    voice_mode: bool = False
 
 
-class ChatResponse(BaseModel):
-    response: str
-    sources: list[str]
-    history: list[Message]
+class TTSRequest(BaseModel):
+    text: str

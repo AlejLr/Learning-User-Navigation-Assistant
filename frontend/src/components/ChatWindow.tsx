@@ -21,10 +21,11 @@ export function ChatWindow({ messages, loading }: Props) {
           Hi! I'm LUNA, Alejandro's portfolio assistant. Ask me anything about his projects or background.
         </p>
       )}
-      {messages.map((msg, i) => (
-        <ChatMessage key={i} message={msg} />
-      ))}
-      {loading && (
+      {messages.map((msg, i) => {
+        const isPendingPlaceholder = i === messages.length - 1 && msg.role === 'assistant' && msg.content === ''
+        return isPendingPlaceholder ? null : <ChatMessage key={i} message={msg} />
+      })}
+      {loading && messages[messages.length - 1]?.content === '' && (
         <div className="message message--luna loading">LUNA is typing…</div>
       )}
       <div ref={bottomRef} />
