@@ -1,12 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { streamMessage, type Message } from '../api/chat'
+import { getProjectBySlug } from '../content/projects'
+import { slugify } from '../utils/slugify'
 import {
   createSentenceQueue,
   stopSpeaking,
   onAvatarTagChange,
   onSpeakingChange,
+  onPageAction,
   type AvatarTag,
   type AvatarState,
+  type PageAction,
 } from '../services/tts'
 
 export type Persona = 'professional' | 'casual'
@@ -17,6 +22,22 @@ export interface ChatMessage {
 }
 
 const GREETING_DURATION_MS = 1000
+const TOAST_DURATION_MS = 3000
+const SCROLL_AFTER_NAV_DELAY_MS = 150
+const HIGHLIGHT_DURATION_MS = 2000
+
+/** Finds an element by slugified target id and flashes it. Retries once after a
+ * short delay in case a navigation that just happened hasn't finished rendering yet. */
+function highlightElement(target: string, attempt = 0): void {
+  const el = document.getElementById(slugify(target))
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    el.classList.add('luna-highlight')
+    setTimeout(() => el.classList.remove('luna-highlight'), HIGHLIGHT_DURATION_MS)
+  } else if (attempt < 1) {
+    setTimeout(() => highlightElement(target, attempt + 1), SCROLL_AFTER_NAV_DELAY_MS)
+  }
+}
 
 export function useChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([])
@@ -30,6 +51,9 @@ export function useChat() {
   const [speaking, setSpeaking] = useState(false)
   const [greetingActive, setGreetingActive] = useState(false)
   const hasGreetedRef = useRef(false)
+  const [toast, setToast] = useState<string | null>(null)
+  const navigate = useNavigate()
+  const location = useLocation()
 
   useEffect(() => onAvatarTagChange(setTagState), [])
   useEffect(() => onSpeakingChange(setSpeaking), [])
@@ -58,6 +82,46 @@ export function useChat() {
     setVoiceEnabledState(value)
     if (!value) stopSpeaking()
   }
+
+  function showToast(message: string) {
+    setToast(message)
+    setTimeout(() => setToast(null), TOAST_DURATION_MS)
+  }
+
+  function handleAction({ type, target }: PageAction) {
+    if (type === 'nav') {
+      const project = getProjectBySlug(target)
+      showToast(`Taking you to ${project?.title ?? target}...`)
+      navigate(`/projects/${target}`)
+      // Without this, the new page can render at whatever scroll position the
+      // previous page was left at, instead of starting at the title/KPIs.
+      setTimeout(() => window.scrollTo({ top: 0, behavior: 'auto' }), SCROLL_AFTER_NAV_DELAY_MS)
+      return
+    }
+
+    if (type === 'scroll') {
+      showToast(`Scrolling to ${target}...`)
+      const scrollNow = () => document.getElementById(target)?.scrollIntoView({ behavior: 'smooth' })
+      if (location.pathname === '/') {
+        scrollNow()
+      } else {
+        navigate('/')
+        setTimeout(scrollNow, SCROLL_AFTER_NAV_DELAY_MS)
+      }
+      return
+    }
+
+    if (type === 'highlight') {
+      highlightElement(target)
+    }
+  }
+
+  // Page actions are emitted by tts.ts in sync with TTS playback (not text generation), so
+  // they land exactly when the matching sentence is spoken. Subscribed once via a ref so the
+  // listener always calls the latest closure without resubscribing on every render.
+  const handleActionRef = useRef(handleAction)
+  handleActionRef.current = handleAction
+  useEffect(() => onPageAction(action => handleActionRef.current(action)), [])
 
   async function send(text: string) {
     if (!text.trim() || loading) return
@@ -109,5 +173,6 @@ export function useChat() {
     setVoiceEnabled,
     avatarState,
     setIsTyping,
+    toast,
   }
 }

@@ -1,4 +1,5 @@
 import json
+import re
 from pathlib import Path
 
 from app.core.config import settings
@@ -42,9 +43,15 @@ def _resolve_slug(project_name: str) -> str | None:
     return None
 
 
+def _slugify(text: str) -> str:
+    """Mirrors the frontend's slugify() so ids match the DOM elements LUNA can target."""
+    return re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
+
+
 def get_project_metadata(project_name: str) -> dict:
     """
-    Return structured metadata for one of Alejandro's projects.
+    Return structured metadata for one of Alejandro's projects, including the
+    section/KPI ids LUNA can target with inline [nav:slug]/[highlight:id] tags.
     Valid names: sdg, smanalyzer, routeguesser, stata, luna, pepadb, esg, ecosim.
     """
     slug = _resolve_slug(project_name)
@@ -57,13 +64,19 @@ def get_project_metadata(project_name: str) -> dict:
 
     data = json.loads(json_file.read_text(encoding="utf-8"))
     return {
+        "slug": slug,
         "title": data.get("title", slug),
         "status": data.get("status", "unknown"),
         "category": data.get("category", "project"),
         "tags": data.get("tags", []),
         "summary": data.get("cardSummary", ""),
         "description": data.get("hero", {}).get("description", ""),
+        "kpis": [
+            {"label": k["label"], "value": k.get("value", ""), "id": _slugify(k["label"])}
+            for k in data.get("hero", {}).get("kpis", [])
+        ],
         "sections": [
-            {"heading": s["heading"], "body": s["body"]} for s in data.get("sections", [])
+            {"heading": s["heading"], "body": s["body"], "id": _slugify(s["heading"])}
+            for s in data.get("sections", [])
         ],
     }

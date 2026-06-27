@@ -5,13 +5,17 @@ const SURPRISED_PREROLL_MS = 700
 
 export type AvatarTag = 'explaining' | 'happy' | 'chill' | 'skeptical' | 'surprised'
 export type AvatarState = AvatarTag | 'greeting' | 'curious' | 'thinking'
+export type PageAction = { type: 'nav' | 'highlight' | 'scroll'; target: string }
 
-const TAG_PATTERN = /^\{(explaining|happy|chill|skeptical|surprised)\}\s*/i
+// Matches "{tag}" optionally followed by "[action:target]", e.g. "{explaining}[highlight:the-challenge] ".
+const TAG_PATTERN = /^\{(explaining|happy|chill|skeptical|surprised)\}(?:\[(nav|highlight|scroll):([^\]]+)\])?\s*/i
 
-function extractTag(sentence: string): { tag: AvatarTag | null; text: string } {
+function extractTag(sentence: string): { tag: AvatarTag | null; action: PageAction | null; text: string } {
   const match = sentence.match(TAG_PATTERN)
-  if (!match) return { tag: null, text: sentence }
-  return { tag: match[1].toLowerCase() as AvatarTag, text: sentence.slice(match[0].length) }
+  if (!match) return { tag: null, action: null, text: sentence }
+  const tag = match[1].toLowerCase() as AvatarTag
+  const action = match[2] ? { type: match[2].toLowerCase() as PageAction['type'], target: match[3].trim() } : null
+  return { tag, action, text: sentence.slice(match[0].length) }
 }
 
 let sessionId = 0
@@ -42,6 +46,39 @@ function setAvatarTag(tag: AvatarTag | null): void {
 export function onAvatarTagChange(listener: TagListener): () => void {
   tagListeners.add(listener)
   return () => tagListeners.delete(listener)
+}
+
+type PageActionListener = (action: PageAction) => void
+const pageActionListeners = new Set<PageActionListener>()
+
+function emitPageAction(action: PageAction): void {
+  pageActionListeners.forEach(listener => listener(action))
+}
+
+/** Subscribes to inline [nav:..]/[highlight:..]/[scroll:..] directives, fired exactly when their sentence starts playing. */
+export function onPageAction(listener: PageActionListener): () => void {
+  pageActionListeners.add(listener)
+  return () => pageActionListeners.delete(listener)
+}
+
+let audioUnlocked = false
+
+/**
+ * Mobile Safari/Chrome only allow Audio.play() when it's invoked directly
+ * within a user gesture's call stack. Our real playback happens after two
+ * async network hops (chat stream, then /tts), well outside that window, so
+ * it gets silently blocked. Playing one silent clip synchronously inside an
+ * actual click handler unlocks audio playback for the rest of the page.
+ */
+export function unlockAudio(): void {
+  if (audioUnlocked) return
+  audioUnlocked = true
+  const silence = new Audio(
+    'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA='
+  )
+  silence.play().catch(() => {
+    audioUnlocked = false
+  })
 }
 
 export function stopSpeaking(): void {
@@ -97,10 +134,13 @@ function wait(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-function speakSentence(text: string, tag: AvatarTag | null, mySession: number): void {
+function speakSentence(text: string, tag: AvatarTag | null, action: PageAction | null, mySession: number): void {
   playQueue = playQueue.then(async () => {
     if (mySession !== sessionId) return
     setAvatarTag(tag)
+    // Fired in this same step, not when the tag was parsed, so it lands exactly
+    // as this sentence's audio starts rather than racing ahead of the voice.
+    if (action) emitPageAction(action)
     // Give the surprised reaction a beat to register before the voice catches up.
     if (tag === 'surprised') await wait(SURPRISED_PREROLL_MS)
     if (mySession !== sessionId || !text.trim()) return
@@ -112,19 +152,20 @@ function speakSentence(text: string, tag: AvatarTag | null, mySession: number): 
 
 /**
  * Buffers streamed tokens and, as each completed sentence is found, strips
- * its leading {tag} (driving the avatar expression) and sends the cleaned
- * text to the backend TTS endpoint, so LUNA starts talking well before the
- * full reply has streamed in. onSentence reports the cleaned, tag-free text
- * back to the caller so it can be shown in the transcript without the tags.
+ * its leading {tag}[action:target] (driving the avatar expression and any
+ * page action) and sends the cleaned text to the backend TTS endpoint, so
+ * LUNA starts talking well before the full reply has streamed in. onSentence
+ * reports the cleaned, tag-free text back to the caller so it can be shown
+ * in the transcript without the tags.
  */
 export function createSentenceQueue(onSentence?: (text: string) => void) {
   const mySession = sessionId
   let buffer = ''
 
   function emit(rawSentence: string): void {
-    const { tag, text } = extractTag(rawSentence)
+    const { tag, action, text } = extractTag(rawSentence)
     if (text) onSentence?.(text + ' ')
-    speakSentence(text, tag, mySession)
+    speakSentence(text, tag, action, mySession)
   }
 
   function push(token: string): void {

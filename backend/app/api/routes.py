@@ -15,11 +15,12 @@ async def chat(request: ChatRequest) -> StreamingResponse:
 
     async def event_stream():
         full_response = ""
-        async for token in llm.chat_stream(
+        async for event in llm.chat_stream(
             request.message, chunks, request.history, request.persona, request.voice_mode
         ):
-            full_response += token
-            yield f"data: {json.dumps({'type': 'token', 'text': token})}\n\n"
+            if event["type"] == "token":
+                full_response += event["text"]
+            yield f"data: {json.dumps(event)}\n\n"
 
         updated_history = request.history + [
             Message(role="user", content=request.message),
