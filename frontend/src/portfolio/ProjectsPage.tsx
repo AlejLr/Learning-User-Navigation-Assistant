@@ -4,7 +4,7 @@ import { ProjectCard } from './ProjectCard'
 import type { ProjectStatus } from '../content/types'
 
 const STACK_TAGS = new Set([
-  'Python', 'FastAPI', 'React', 'Docker', 'GIS', 'Scrum', 'Streamlit',
+  'Python', 'FastAPI', 'React', 'TypeScript', 'Docker', 'GIS', 'Scrum', 'Streamlit',
   'Flask', 'Stata', 'Vector Search', 'LLM', 'Full-Stack',
 ])
 

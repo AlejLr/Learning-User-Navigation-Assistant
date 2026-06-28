@@ -1,5 +1,5 @@
 import type { RefObject } from 'react'
-import { useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import about from '../content/about.json'
 import courses from '../content/courses.json'
@@ -19,8 +19,9 @@ export function HomePage() {
     document.getElementById(location.hash.slice(1))?.scrollIntoView({ behavior: 'smooth' })
   }, [location.hash])
 
-  // Container-level observers for cert list and contact grid
-  const { ref: certsRef, inView: certsInView } = useInView<HTMLDivElement>()
+  // Container-level observers for section reveals
+  const { ref: aboutRef,   inView: aboutInView   } = useInView<HTMLElement>()
+  const { ref: certsRef,   inView: certsInView   } = useInView<HTMLDivElement>()
   const { ref: contactRef, inView: contactInView } = useInView<HTMLDivElement>()
 
   return (
@@ -43,7 +44,11 @@ export function HomePage() {
         </div>
       </section>
 
-      <section id="about" className="container">
+      <section
+        id="about"
+        className={`container about-section${aboutInView ? ' section--in' : ''}`}
+        ref={aboutRef as React.RefObject<HTMLElement>}
+      >
         <h2>About me</h2>
         {about.aboutText.map(paragraph => (
           <p key={paragraph}>{paragraph}</p>
