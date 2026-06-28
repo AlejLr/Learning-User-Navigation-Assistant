@@ -74,24 +74,23 @@ export function onTTSFailure(listener: FailureListener): () => void {
   return () => failureListeners.delete(listener)
 }
 
-let audioUnlocked = false
-
 /**
  * Mobile Safari/Chrome only allow Audio.play() when it's invoked directly
  * within a user gesture's call stack. Our real playback happens after two
  * async network hops (chat stream, then /tts), well outside that window, so
  * it gets silently blocked. Playing one silent clip synchronously inside an
  * actual click handler unlocks audio playback for the rest of the page.
+ *
+ * Some mobile browsers don't keep that unlock "armed" indefinitely once the
+ * gesture's call stack has unwound, so this runs on every send (not just the
+ * first) — it's cheap, and skipping it after message one is what let
+ * playback silently die from the second message onward.
  */
 export function unlockAudio(): void {
-  if (audioUnlocked) return
-  audioUnlocked = true
   const silence = new Audio(
     'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA='
   )
-  silence.play().catch(() => {
-    audioUnlocked = false
-  })
+  silence.play().catch(() => {})
 }
 
 export function stopSpeaking(): void {
