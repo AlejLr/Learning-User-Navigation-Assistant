@@ -3,8 +3,6 @@ import { projects } from '../content/projects'
 import { ProjectCard } from './ProjectCard'
 import type { ProjectStatus } from '../content/types'
 
-// Tags that describe tooling/tech stack rather than topic/domain. Anything
-// not listed here defaults to the Topic dropdown.
 const STACK_TAGS = new Set([
   'Python', 'FastAPI', 'React', 'Docker', 'GIS', 'Scrum', 'Streamlit',
   'Flask', 'Stata', 'Vector Search', 'LLM', 'Full-Stack',
@@ -31,10 +29,7 @@ export function ProjectsPage() {
     projects.forEach(p => p.tags.forEach(tag => {
       (STACK_TAGS.has(tag) ? stacks : topics).add(tag)
     }))
-    return {
-      topicOptions: Array.from(topics).sort(),
-      stackOptions: Array.from(stacks).sort(),
-    }
+    return { topicOptions: Array.from(topics).sort(), stackOptions: Array.from(stacks).sort() }
   }, [])
 
   const visible = projects.filter(p => {
@@ -48,24 +43,20 @@ export function ProjectsPage() {
   const completed = visible.filter(p => p.status === 'completed')
   const inProgressOrPlanned = visible.filter(p => p.status !== 'completed')
 
-  function clearFilters() {
-    setTopic('')
-    setStatus('')
-    setStack('')
-  }
-
+  function clearFilters() { setTopic(''); setStatus(''); setStack('') }
   const hasFilters = Boolean(topic || status || stack)
 
   return (
     <main id="main-content" className="container" style={{ marginTop: '2rem' }}>
       <nav className="breadcrumbs" aria-label="Breadcrumb">
-        <a href="/">Home</a> <span aria-hidden="true">›</span> <span aria-current="page">Projects</span>
+        <a href="/">Home</a> <span aria-hidden="true">›</span>{' '}
+        <span aria-current="page">Projects</span>
       </nav>
 
       <section className="page-hero" aria-labelledby="projects-title">
-        <h1 id="projects-title">All Projects</h1>
+        <h1 id="projects-title">All projects</h1>
         <p>
-          A selection of completed, in-progress, and planned projects across AI, data science,
+          Completed, in-progress, and planned work across AI, data science,
           econometrics, and software engineering. Use the filters to narrow by topic, status, or stack.
         </p>
       </section>
@@ -81,9 +72,7 @@ export function ProjectsPage() {
             <span>Topic</span>
             <select id="topic-filter" value={topic} onChange={e => setTopic(e.target.value)}>
               <option value="">All topics</option>
-              {topicOptions.map(t => (
-                <option value={t} key={t}>{t}</option>
-              ))}
+              {topicOptions.map(t => <option value={t} key={t}>{t}</option>)}
             </select>
           </label>
 
@@ -101,9 +90,7 @@ export function ProjectsPage() {
             <span>Stack</span>
             <select id="stack-filter" value={stack} onChange={e => setStack(e.target.value)}>
               <option value="">All stacks</option>
-              {stackOptions.map(s => (
-                <option value={s} key={s}>{s}</option>
-              ))}
+              {stackOptions.map(s => <option value={s} key={s}>{s}</option>)}
             </select>
           </label>
         </div>
@@ -128,11 +115,13 @@ export function ProjectsPage() {
               <h3 id="completed-projects-title">Completed projects</h3>
               <p>Finished work and the strongest evidence of what I can deliver end-to-end.</p>
             </div>
-            <span className="project-group-pill">{completed.length} project{completed.length === 1 ? '' : 's'}</span>
+            <span className="project-group-pill">
+              {completed.length} project{completed.length === 1 ? '' : 's'}
+            </span>
           </div>
           <div className="project-group-body">
-            {completed.map(project => (
-              <ProjectCard project={project} key={project.slug} />
+            {completed.map((project, i) => (
+              <ProjectCard project={project} key={project.slug} delay={i * 60} />
             ))}
           </div>
         </section>
@@ -145,11 +134,13 @@ export function ProjectsPage() {
               <h3 id="exploring-projects-title">In progress and planned</h3>
               <p>Ideas and work-in-progress, kept separate so the finished projects stay dominant.</p>
             </div>
-            <span className="project-group-pill">{inProgressOrPlanned.length} project{inProgressOrPlanned.length === 1 ? '' : 's'}</span>
+            <span className="project-group-pill">
+              {inProgressOrPlanned.length} project{inProgressOrPlanned.length === 1 ? '' : 's'}
+            </span>
           </div>
           <div className="project-group-body">
-            {inProgressOrPlanned.map(project => (
-              <ProjectCard project={project} key={project.slug} />
+            {inProgressOrPlanned.map((project, i) => (
+              <ProjectCard project={project} key={project.slug} delay={i * 60} />
             ))}
           </div>
         </section>

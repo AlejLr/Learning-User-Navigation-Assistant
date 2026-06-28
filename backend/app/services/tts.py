@@ -23,6 +23,23 @@ def _clean_for_speech(text: str) -> str:
     return re.sub(r"\s+", " ", text).strip()
 
 
+# Respelled so the English voice approximates the real Spanish pronunciation
+# (a-le-HAHN-droh) instead of reading it as an English name. Written as one
+# unbroken word, hyphens/spaces make the engine pause and read it out
+# syllable by syllable instead of flowing it like a real name. Only applied
+# to the audio sent to TTS, never to the displayed transcript.
+_PRONUNCIATION_FIXES: dict[str, str] = {
+    "alejandro": "Alehahndro",
+}
+_PRONUNCIATION_PATTERN = re.compile(
+    r"\b(" + "|".join(re.escape(name) for name in _PRONUNCIATION_FIXES) + r")\b", re.IGNORECASE
+)
+
+
+def _fix_pronunciation(text: str) -> str:
+    return _PRONUNCIATION_PATTERN.sub(lambda m: _PRONUNCIATION_FIXES[m.group(0).lower()], text)
+
+
 def _get_client() -> texttospeech.TextToSpeechClient | None:
     global _client
 
@@ -48,6 +65,7 @@ def synthesize(text: str) -> bytes:
     cleaned = _clean_for_speech(text)
     if not cleaned:
         return b""
+    cleaned = _fix_pronunciation(cleaned)
     client = _get_client()
     if client is None:
         return b""

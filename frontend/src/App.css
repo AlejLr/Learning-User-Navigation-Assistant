@@ -1,22 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
 /* Scoped chat theme — variables are namespaced (--chat-*) so they never
    collide with the portfolio's own :root variables (--accent, --bg, etc.).
    Split from layout so both the full-page ChatPage and the floating
    ChatWidget can share the same theme without the viewport-centering. */
 .chat-theme {
-  --chat-blue: #1e3a8a;
-  --chat-blue-light: #3b5fc0;
+  --chat-accent: #3b82f6;
+  --chat-accent-dark: #2563eb;
   --chat-bg: #0f172a;
   --chat-surface: #1e293b;
-  --chat-border: #334155;
+  --chat-surface-raised: #253347;
+  --chat-border: #2d3f55;
   --chat-text: #f1f5f9;
   --chat-text-muted: #94a3b8;
 
   color: var(--chat-text);
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: "Outfit", system-ui, sans-serif;
 }
 
 .chat-page {
-  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -28,31 +31,32 @@
   flex-direction: column;
   width: 100%;
   max-width: 720px;
-  height: 90vh;
+  height: 90dvh;
   background: var(--chat-surface);
   border: 1px solid var(--chat-border);
-  border-radius: 12px;
+  border-radius: 14px;
   overflow: hidden;
 }
 
 /* Header */
 .app-header {
-  padding: 16px 20px;
+  padding: 14px 20px;
   border-bottom: 1px solid var(--chat-border);
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  background: rgba(15, 23, 42, 0.5);
 }
 
 .app-header h1 {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 700;
-  color: var(--chat-blue-light);
-  letter-spacing: 0.05em;
+  color: var(--chat-text);
+  letter-spacing: 0.04em;
 }
 
 .app-header p {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--chat-text-muted);
   flex: 1;
 }
@@ -60,17 +64,18 @@
 /* Persona toggle */
 .persona-toggle {
   display: flex;
-  gap: 4px;
+  gap: 3px;
   background: var(--chat-bg);
   padding: 3px;
-  border-radius: 6px;
+  border-radius: 7px;
 }
 
 .persona-toggle button {
   padding: 4px 10px;
-  font-size: 0.75rem;
+  font-size: 0.74rem;
+  font-family: inherit;
   border: none;
-  border-radius: 4px;
+  border-radius: 5px;
   cursor: pointer;
   background: transparent;
   color: var(--chat-text-muted);
@@ -78,7 +83,7 @@
 }
 
 .persona-toggle button.active {
-  background: var(--chat-blue);
+  background: var(--chat-surface-raised);
   color: var(--chat-text);
 }
 
@@ -89,27 +94,18 @@
   padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   scrollbar-width: thin;
-  scrollbar-color: var(--chat-border) var(--chat-surface);
+  scrollbar-color: var(--chat-border) transparent;
 }
 
-.chat-window::-webkit-scrollbar {
-  width: 8px;
-}
-
-.chat-window::-webkit-scrollbar-track {
-  background: var(--chat-surface);
-}
-
+.chat-window::-webkit-scrollbar { width: 6px; }
+.chat-window::-webkit-scrollbar-track { background: transparent; }
 .chat-window::-webkit-scrollbar-thumb {
   background: var(--chat-border);
-  border-radius: 4px;
+  border-radius: 3px;
 }
-
-.chat-window::-webkit-scrollbar-thumb:hover {
-  background: var(--chat-blue-light);
-}
+.chat-window::-webkit-scrollbar-thumb:hover { background: var(--chat-text-muted); }
 
 .chat-empty {
   color: var(--chat-text-muted);
@@ -124,21 +120,21 @@
   padding: 10px 14px;
   border-radius: 10px;
   font-size: 0.9rem;
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
 .message--user {
   align-self: flex-end;
-  background: var(--chat-blue);
-  color: var(--chat-text);
-  border-bottom-right-radius: 2px;
+  background: var(--chat-accent-dark);
+  color: #fff;
+  border-bottom-right-radius: 3px;
 }
 
 .message--luna {
   align-self: flex-start;
-  background: var(--chat-bg);
+  background: var(--chat-surface-raised);
   border: 1px solid var(--chat-border);
-  border-bottom-left-radius: 2px;
+  border-bottom-left-radius: 3px;
 }
 
 .message--luna h1,
@@ -146,7 +142,8 @@
 .message--luna h3 {
   font-size: 0.95rem;
   margin: 8px 0 4px;
-  color: var(--chat-blue-light);
+  color: var(--chat-accent);
+  font-family: "Outfit", sans-serif;
 }
 
 .message--luna p { margin: 4px 0; }
@@ -154,10 +151,10 @@
 .message--luna ol { padding-left: 18px; margin: 4px 0; }
 .message--luna strong { color: var(--chat-text); }
 .message--luna code {
-  background: var(--chat-surface);
-  padding: 1px 4px;
-  border-radius: 3px;
-  font-size: 0.85em;
+  background: var(--chat-bg);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 0.84em;
 }
 
 .loading { color: var(--chat-text-muted); font-style: italic; }
@@ -165,7 +162,7 @@
 /* Sources */
 .sources {
   padding: 6px 20px;
-  font-size: 0.75rem;
+  font-size: 0.74rem;
   color: var(--chat-text-muted);
   border-top: 1px solid var(--chat-border);
 }
@@ -185,29 +182,35 @@
   background: var(--chat-bg);
   border: 1px solid var(--chat-border);
   border-radius: 8px;
-  padding: 8px 12px;
+  padding: 9px 12px;
   color: var(--chat-text);
   font-family: inherit;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   resize: none;
   outline: none;
   transition: border-color 0.15s;
 }
 
-.chat-input textarea:focus { border-color: var(--chat-blue-light); }
+.chat-input textarea:focus { border-color: var(--chat-accent); }
 .chat-input textarea::placeholder { color: var(--chat-text-muted); }
 
 .chat-input button {
   padding: 0 18px;
-  background: var(--chat-blue);
-  color: var(--chat-text);
+  background: var(--chat-accent-dark);
+  color: #fff;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
+  font-family: inherit;
   font-weight: 600;
-  transition: background 0.15s;
+  transition: background 0.15s, transform 0.15s;
 }
 
-.chat-input button:hover:not(:disabled) { background: var(--chat-blue-light); }
-.chat-input button:disabled { opacity: 0.4; cursor: not-allowed; }
+.chat-input button:hover:not(:disabled) {
+  background: var(--chat-accent);
+  transform: translateY(-1px);
+}
+
+.chat-input button:active:not(:disabled) { transform: translateY(0); }
+.chat-input button:disabled { opacity: 0.35; cursor: not-allowed; }

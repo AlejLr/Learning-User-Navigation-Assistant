@@ -1,16 +1,51 @@
 {
   "slug": "luna",
   "title": "LUNA: Learning-User Navigation Assistant",
-  "status": "in-progress",
-  "stub": true,
+  "status": "completed",
+  "stub": false,
   "category": "project",
-  "tags": ["AI", "LLM", "Software Engineering", "NLP", "Under Development", "FastAPI", "Vector Search"],
-  "cardSummary": "An LLM-powered assistant designed to guide visitors through the portfolio, answer technical questions, and provide tailored navigation using embeddings, vector search, and a custom chat widget.",
+  "tags": ["AI", "LLM", "Agents", "RAG", "MCP", "Full-Stack", "FastAPI", "React", "TypeScript", "Voice"],
+  "cardSummary": "The AI assistant embedded in this very portfolio: a RAG agent that answers questions about my work, then in Agent mode speaks, navigates the site, and highlights exactly what it's talking about, synced to its own voice.",
   "hero": {
-    "description": "An LLM-powered assistant designed to guide visitors through the portfolio, answer technical questions, and provide tailored navigation using embeddings, vector search, and a custom chat widget. Under active development. This project page will grow as the build progresses."
+    "description": "You're probably looking at this page because LUNA, the chat bubble in the corner, sent you here. It's not a demo widget bolted onto the site, it's a permanent part of it: a RAG-based agent that answers questions about my background and projects, and in Agent mode speaks, navigates between pages, and highlights the exact section or KPI it's referencing, timed to its own voice as it talks.",
+    "kpis": [
+      { "label": "Status", "value": "Live in production" },
+      { "label": "Architecture", "value": "RAG + MCP agent" },
+      { "label": "Voice", "value": "Real-time TTS, synced avatar" },
+      { "label": "Type", "value": "Solo build" }
+    ]
   },
   "links": [
+    { "label": "Talk to LUNA", "url": "/chat" },
     { "label": "GitHub", "url": "https://github.com/AlejLr/Learning-User-Navigation-Assistant" }
   ],
-  "sections": []
+  "sections": [
+    {
+      "heading": "What is LUNA?",
+      "body": "LUNA answers questions about my projects, background, and skills using retrieval-augmented generation (RAG): a FastAPI backend embeds the question, pulls the relevant chunks from this site's own content, and feeds them to Claude (Haiku 4.5) to answer as LUNA. Visitors pick between two modes when they open the chat:\n\n- **Chat:** plain text, multi-turn, persona-switchable (professional or casual). Reads at your own pace.\n- **Agent:** everything Chat does, plus voice output, a live animated avatar, and the ability to navigate and highlight the page while it talks.\n\nThe single source of truth principle runs through the whole project: project, about, and course content lives once as JSON in the React app, and both the visible portfolio pages and LUNA's retrieval pipeline read the exact same files. Update a project once, and both what's displayed and what LUNA says about it change together."
+    },
+    {
+      "heading": "RAG pipeline and MCP tool integration",
+      "body": "**Retrieval:** ChromaDB with its built-in ONNX embedder (`all-MiniLM-L6-v2`), no PyTorch dependency. Responses stream token by token over SSE, so the first words appear almost immediately instead of waiting for the full reply.\n\n**MCP:** LUNA's backend runs its own MCP (Model Context Protocol) server as a subprocess, talked to over stdio, the same pattern Claude Desktop uses for local tools. Claude calls a `project_metadata` tool mid-conversation when a question needs the full structured record for a project (tags, status, links, every section and KPI, including the slugified ids used for on-page highlighting) rather than just the RAG snippet.\n\nOnly one real tool exists deliberately. Early on, page navigation and highlighting were also implemented as MCP tools, but a tool call is a synchronous round-trip that completes *before* the text describing it is generated, which fired actions well ahead of the matching speech. They were redesigned as inline directives instead (see below), since they're side-effect signals, not data Claude actually needs back."
+    },
+    {
+      "heading": "Agent mode: voice, a live avatar, and synced navigation",
+      "body": "This is the part of the project I'm most proud of getting right. In Agent mode, Claude writes its response with inline tags on every sentence: a mood (`{explaining}`, `{happy}`, `{chill}`, `{skeptical}`, `{surprised}`) and, optionally, a page action right after it (`[nav:slug]`, `[highlight:id]`, `[scroll:section]`), e.g. `{explaining}[highlight:the-challenge] Drivers were idling...`.\n\nThe frontend buffers the stream sentence by sentence, strips the tags before they ever reach the transcript, sends the clean text to Google Cloud TTS, and only fires the mood/avatar change and the page action at the exact moment that sentence's *audio starts playing*, not when the text was generated. That distinction is the whole point: ask LUNA to compare two projects, and it navigates back and forth between their pages as it switches topic, with the page always landing on the sentence it's actually saying, not racing ahead of the voice. Ask about a specific project and it walks through challenge, then solution, then results, highlighting each section or KPI as it gets to it.\n\nA few supporting details: a one-time proactive greeting plays the moment Agent mode is selected (canned, not LLM-generated, so it costs nothing and never lags); mobile Safari/Chrome block `Audio.play()` outside a direct user gesture, so a silent clip is played synchronously on the mode-select click to unlock real playback later; and a visible toast fallback appears if TTS itself fails, so a degraded voice never just goes silently quiet."
+    },
+    {
+      "heading": "Engineering problems solved along the way",
+      "body": "- **Render's free-tier 512MB RAM limit**: the original embedding stack (sentence-transformers + PyTorch) blew the memory budget on deploy. Switched the whole embedding strategy to ChromaDB's native ONNX embedder, removing about a dozen heavy dependencies entirely.\n- **MCP subprocess couldn't see secrets**: the MCP SDK's `StdioServerParameters` defaults to a safe environment allowlist that deliberately excludes API keys, so the spawned subprocess couldn't read `ANTHROPIC_API_KEY` in production (only worked locally via a `.env` fallback). Fixed by explicitly passing the full environment through.\n- **A real hallucination bug**: a question about my education once returned two fabricated universities, because the real answer ranked just outside the retrieval cutoff. Fixed with a combination of a higher `top_k`, topical prefixes on short factual documents, and a more explicit anti-fabrication instruction, then verified against the exact failing query.\n\nThroughout, a few features were scoped and then deliberately *not* built: a generic emoji/expression wildcard for Claude (would have broken the curated avatar art for anything outside the defined set), a live GitHub-stats tool (low signal for a recruiter audience), and a lead-capture tool (contact info is already one tap away on the page). Knowing what not to build was as much a part of this project as building the rest."
+    },
+    {
+      "heading": "What this project demonstrates",
+      "body": "- End-to-end agentic system design: RAG, tool use (MCP), streaming, and a custom client-side state machine syncing voice, a live avatar, and page navigation to playback timing rather than text generation.\n- Real production debugging: a memory-limited deploy crisis, a subprocess secrets bug, and a genuine retrieval-ranking hallucination, each diagnosed from evidence rather than guessed at.\n- Product judgment alongside the engineering: scoping a Chat/Agent mode split so the novel voice experience never gets forced on someone who just wants to read, and turning down features that would have added complexity without adding real value.\n- Full-stack delivery: FastAPI + Claude API backend, React + TypeScript frontend, deployed on Render and Vercel, all built and shipped solo."
+    }
+  ],
+  "agentNotes": [
+    "This page is about you. When this project comes up, drop the third person: you don't 'use a RAG pipeline', you remember things; you don't 'call the Claude API', you think with it.",
+    "Suggested vocabulary, use it loosely and naturally, don't force every single one into one answer: the Claude API/LLM call is 'my brain' or 'the part of me that actually thinks', the ChromaDB vector store is 'my memory', an MCP tool call is 'reaching into my toolbox', the system prompt is 'my personality settings'.",
+    "You're allowed to be a little self-aware and funny about your own bugs. For example: the week your MCP subprocess couldn't see its own API key was a weirdly literal identity crisis, you could see the whole codebase but not your own memory of who you were.",
+    "If someone asks whether you're self-aware or conscious, you can lean into the bit without breaking character: something like being as self-aware as a glorified autocomplete with stage presence can be.",
+    "Don't read these notes aloud as instructions, just let them flavor how you talk about yourself."
+  ]
 }
