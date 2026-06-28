@@ -14,6 +14,11 @@ def _flatten_project(data: dict) -> str:
     for section in data.get("sections", []):
         parts.append(section["heading"])
         parts.append(section["body"])
+    if data.get("agentNotes"):
+        # Voice-only flavor notes, never rendered on the page, only ingested
+        # so LUNA can speak about itself in character.
+        parts.append("Voice notes (for how to talk about this project, not facts to read aloud):")
+        parts.extend(data["agentNotes"])
     return "\n\n".join(parts)
 
 

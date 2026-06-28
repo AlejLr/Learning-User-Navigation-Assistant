@@ -19,7 +19,7 @@ export const projects: ProjectContent[] = [
   ecosim,
 ] as ProjectContent[]
 
-export const featuredSlugs = ['sdg', 'smanalyzer', 'ecosim']
+export const featuredSlugs = ['luna', 'sdg', 'smanalyzer']
 
 export function getProjectBySlug(slug: string): ProjectContent | undefined {
   return projects.find(p => p.slug === slug)

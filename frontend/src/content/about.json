@@ -4,10 +4,10 @@
   "eyebrow": "Data Science & AI Portfolio",
   "heroHeadline": "Building data-driven products that connect analytics, AI, and business value.",
   "heroDescription": "I'm a Data Science and AI student who builds things end-to-end: from understanding what question to ask, to deploying the answer. My work spans NLP pipelines, econometric models, and business analytics that made it into real operations.",
-  "heroStats": ["4 completed projects", "1 implemented in production", "IBM Data Analyst certified"],
+  "heroStats": ["7 completed projects", "2 client-implemented solutions", "IBM Data Analyst certified"],
   "aboutText": [
-    "I'm a Data Science and AI student drawn to problems where analytical thinking produces tangible results, not just a good model, but a real decision or outcome. I've built deployed NLP dashboards, modeled large-scale economic datasets, and led a team whose operational recommendation was adopted by a logistics company.",
-    "I care about problem framing as much as model selection, and stakeholder communication as much as technical depth. My goal is to be useful at the intersection of data, business, and engineering."
+    "I'm a Data Science and AI student who enjoys seeing a project through to something real, not just a working model. On a sustainability challenge for DSV, I led the team as captain; the fleet-charging workflow we proposed was implemented by DSV and cut estimated operational costs by around 80%. On PEPAdb, an archaeological database for the University of Seville, I was frontend lead and kept in regular contact with the client while building most of the interface myself. And on the side, I built LUNA, the assistant on this site, a RAG-based agent with real-time voice and an avatar synced to its own speech, on my own from start to finish.",
+    "What ties these together is that I like staying close to the whole problem, not just the modeling part: talking to the people who'll use the thing, and building it myself when that's what it takes. I'm comfortable moving between a notebook, a client call, and a codebase, and that's the kind of work I'm looking for."
   ],
   "cvUrl": "/assets/CV.pdf",
   "contact": {

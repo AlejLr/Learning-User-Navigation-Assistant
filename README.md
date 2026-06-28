@@ -57,7 +57,6 @@ User sends a question → backend embeds it → retrieves relevant chunks from t
 
 **Remaining:**
 - Advanced retrieval: chunking, reranking, summary-compressed history (low priority at current traffic/conversation length)
-- A visible fallback when TTS itself fails outright (mobile autoplay is already handled via an audio-unlock on first gesture)
 
 ---
 

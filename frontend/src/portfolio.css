@@ -1,26 +1,41 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
 
+/* ─── Tactical Telemetry palette ──────────────────────────── */
 :root {
-  --accent: #0b6cff;
-  --accent-dark: #074db0;
-  --accent-soft: rgba(11, 108, 255, 0.12);
-  --bg: #f3f7fb;
-  --surface: #ffffff;
-  --surface-alt: #eef4ff;
-  --text: #182232;
-  --muted: #566273;
-  --border: #d6e0ec;
-  --shadow-sm: 0 8px 24px rgba(14, 30, 54, 0.06);
-  --shadow-md: 0 18px 48px rgba(14, 30, 54, 0.10);
+  --accent:        #E61919;
+  --accent-dim:    rgba(230, 25, 25, 0.12);
+  --bg:            #0D0D0D;
+  --bg-surface:    #131313;
+  --bg-raised:     #1A1A1A;
+  --text:          #E0E0D8;
+  --muted:         #8A8A82;
+  --border:        #222222;
+  --border-bright: #4A4A4A;
+  --green:         #4AF626;
+  --nav-height:    52px;
+  --ease-out:      cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out:   cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-spring:   cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+/* Dark scrollbar */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-bright) var(--bg);
+}
+
+::-webkit-scrollbar       { width: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border-bright); }
+::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+/* ─── Base ────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
 body {
-  font-family: "Inter", sans-serif;
+  font-family: "IBM Plex Mono", monospace;
   margin: 0;
-  background:
-    radial-gradient(circle at top left, rgba(11, 108, 255, 0.08), transparent 24%),
-    radial-gradient(circle at top right, rgba(67, 156, 255, 0.08), transparent 26%),
-    linear-gradient(180deg, #f8fbff 0%, var(--bg) 42%, #f6f8fc 100%);
+  background: var(--bg);
   color: var(--text);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
@@ -28,401 +43,464 @@ body {
   scroll-behavior: smooth;
 }
 
+/* Noise grain */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
   pointer-events: none;
-  background-image: linear-gradient(rgba(255,255,255,0.38) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.38) 1px, transparent 1px);
-  background-size: 32px 32px;
-  mask-image: linear-gradient(180deg, rgba(0,0,0,0.18), transparent 78%);
-  opacity: 0.22;
+  z-index: 998;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
+/* CRT scanlines */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.07) 2px,
+    rgba(0, 0, 0, 0.07) 4px
+  );
+}
+
+/* ─── Keyframes ───────────────────────────────────────────── */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(20px); filter: blur(5px); }
+  to   { opacity: 1; transform: translateY(0);    filter: blur(0);   }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; filter: blur(4px); }
+  to   { opacity: 1; filter: blur(0);   }
+}
+
+@keyframes nav-slide-down {
+  from { opacity: 0; transform: translateY(-8px); filter: blur(4px); }
+  to   { opacity: 1; transform: translateY(0);    filter: blur(0);   }
+}
+
+/* ─── Skip link ───────────────────────────────────────────── */
 .skip-link {
   position: absolute;
   left: -9999px;
   top: 0;
-  background: #fff;
-  color: var(--accent-dark);
-  border: 2px solid var(--accent-dark);
-  border-radius: 999px;
+  background: var(--bg-surface);
+  color: var(--accent);
+  border: 1px solid var(--accent);
   padding: 0.6rem 0.9rem;
-  z-index: 1000;
+  z-index: 200;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.skip-link:focus { left: 1rem; top: 1rem; }
+
+/* ─── Site Header ─────────────────────────────────────────── */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: var(--nav-height);
+  background: rgba(13, 13, 13, 0.82);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+  animation: nav-slide-down 420ms var(--ease-out) both;
 }
 
-.skip-link:focus {
-  left: 1rem;
-  top: 1rem;
+.header-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-header {
-  background:
-    radial-gradient(circle at top right, rgba(255,255,255,0.14), transparent 18%),
-    linear-gradient(135deg, #0d76ff 0%, #074db0 100%);
-  color: #fff;
-  padding: 1.6rem 0 1.45rem;
-  text-align: center;
-  box-shadow: 0 10px 28px rgba(0, 65, 160, 0.18);
-  position: relative;
-  overflow: hidden;
-}
-
-header::after {
-  content: '';
-  position: absolute;
-  inset: auto -8% -48% -8%;
-  height: 170px;
-  background: radial-gradient(circle, rgba(255,255,255,0.22) 0, rgba(255,255,255,0.08) 20%, transparent 62%);
-  transform: skewY(-4deg);
-  pointer-events: none;
-}
-
-header h1 {
-  margin: 0;
-  font-size: 2rem;
-  letter-spacing: -0.03em;
-  font-family: "Fraunces", serif;
+.brand {
+  font-family: "IBM Plex Mono", monospace;
   font-weight: 700;
-}
-
-.subtitle {
-  margin-top: 0.3rem;
-  opacity: 0.92;
-  font-weight: 500;
-}
-
-nav {
-  margin-top: 1rem;
-}
-
-nav a {
-  color: #fff;
-  margin: 0 0.6rem;
+  font-size: 0.7rem;
+  color: var(--text);
   text-decoration: none;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: color 130ms var(--ease-out);
+}
+
+.brand::before { content: '[ '; color: var(--accent); }
+.brand::after  { content: ' ]'; color: var(--accent); }
+
+@media (hover: hover) and (pointer: fine) {
+  .brand:hover { color: var(--accent); }
+}
+
+.nav-toggle {
+  display: none;
+  background: transparent;
+  border: 1px solid var(--border-bright);
+  color: var(--text);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.65rem;
   font-weight: 600;
-  padding: 0.35rem 0.15rem;
-  border-bottom: 1px solid transparent;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.6rem;
+  cursor: pointer;
 }
 
-nav a:hover {
-  border-bottom-color: rgba(255,255,255,0.72);
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 0;
 }
 
-main {
-  max-width: 900px;
-  margin: 2rem auto;
-  padding: 0 1rem;
+.site-nav a {
+  color: var(--muted);
+  text-decoration: none;
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 500;
+  font-size: 0.72rem;
+  padding: 0.4rem 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: color 120ms var(--ease-out);
 }
+
+.site-nav a:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: -1px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .site-nav a:hover { color: var(--text); }
+}
+
+.site-nav a.active {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-underline-offset: 3px;
+}
+
+/* ─── Containers ──────────────────────────────────────────── */
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* Top breathing room for every content section on the homepage */
+main > section.container { padding-top: 4.5rem; }
+
+main { padding-bottom: 6rem; }
 
 section {
-  margin-bottom: 2.75rem;
-  scroll-margin-top: 1.5rem;
+  margin-bottom: 5rem;
+  scroll-margin-top: calc(var(--nav-height) + 1rem);
 }
 
-.hero {
-  position: relative;
-  background:
-    radial-gradient(circle at 18% 12%, rgba(11, 108, 255, 0.16), transparent 22%),
-    radial-gradient(circle at 92% 14%, rgba(18, 196, 190, 0.12), transparent 18%),
-    linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
-  border: 1px solid rgba(214, 224, 236, 0.9);
-  border-radius: 24px;
-  padding: 2.4rem 1.8rem;
-  box-shadow: var(--shadow-md);
-  overflow: hidden;
+/* ─── Hero Section ─────────────────────────────────────────── */
+.hero-section {
+  padding: 5.5rem 1.5rem 5rem;
+  max-width: 960px;
+  margin: 0 auto;
+  border-bottom: 1px solid var(--border);
 }
 
-.hero::after {
-  content: '';
-  position: absolute;
-  right: -5rem;
-  top: -4rem;
-  width: 12rem;
-  height: 12rem;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(11, 108, 255, 0.14), transparent 64%);
-  filter: blur(2px);
-  pointer-events: none;
-}
+.hero-section .eyebrow          { animation: fade-up 640ms var(--ease-out)         both; }
+.hero-section .hero-headline    { animation: fade-up 780ms var(--ease-spring) 100ms both; }
+.hero-section .hero-description { animation: fade-up 600ms var(--ease-out)    220ms both; }
+.hero-section .hero-stats       { animation: fade-up 520ms var(--ease-out)    360ms both; }
+.hero-section .hero-ctas        { animation: fade-up 460ms var(--ease-out)    480ms both; }
 
 .eyebrow {
-  margin: 0 0 0.5rem;
-  color: var(--accent-dark);
+  margin: 0 0 1.1rem;
+  color: var(--accent);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 0.78rem;
-  font-weight: 700;
 }
 
-.hero h2 {
-  margin: 0 0 0.75rem;
-  font-size: clamp(1.8rem, 4vw, 2.5rem);
-  line-height: 1.15;
-  color: #101f33;
-  border-bottom: 0;
-  padding-bottom: 0;
-  font-family: "Fraunces", serif;
-  font-weight: 700;
+.eyebrow::before {
+  content: '// ';
+  color: var(--border-bright);
+}
+
+.hero-headline {
+  font-family: "Archivo Black", sans-serif;
+  font-size: clamp(2.5rem, 4.5vw, 4rem);
+  line-height: 0.92;
   letter-spacing: -0.03em;
+  color: var(--text);
+  margin: 0 0 1.5rem;
+  font-weight: 900;
+  text-transform: uppercase;
 }
 
-.hero p {
-  max-width: 68ch;
+.hero-description {
   color: var(--muted);
-  margin-bottom: 0;
-  font-size: 1.02rem;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.9rem;
+  line-height: 1.75;
+  margin-bottom: 1.4rem;
+  letter-spacing: 0.02em;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
 }
 
 .hero-stats {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.3rem 0.7rem;
-  font-size: 0.85rem;
+  gap: 0.2rem 1rem;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.70rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: var(--muted);
   font-weight: 500;
-  margin: 0.85rem 0 0;
+  margin: 0 0 2rem;
 }
 
+.hero-ctas {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* ─── Typography ──────────────────────────────────────────── */
 h2 {
-  border-bottom: 0;
-  padding-bottom: 0;
-  color: #12243d;
-  font-family: "Fraunces", serif;
-  font-weight: 700;
-  letter-spacing: -0.025em;
-  position: relative;
-  display: inline-block;
-  margin-bottom: 0.8rem;
-}
-
-h2::after {
-  content: '';
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 800;
+  font-size: 1.15rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text);
+  margin-bottom: 1.5rem;
+  line-height: 1.3;
   display: block;
-  width: 3.25rem;
-  height: 3px;
-  border-radius: 999px;
-  margin-top: 0.55rem;
-  background: linear-gradient(90deg, var(--accent), rgba(18, 196, 190, 0.45));
 }
 
-.project-card {
-  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
-  border-radius: 18px;
-  padding: 1.05rem 1.25rem 1.1rem;
-  margin: 0;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid rgba(214, 224, 236, 0.9);
-  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
-  position: relative;
-  overflow: hidden;
+h2::before { content: '// '; color: var(--accent); }
+
+h3 {
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 700;
+  letter-spacing: 0.01em;
 }
 
-.project-card::before {
-  content: '';
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 0.35rem;
-  background: linear-gradient(180deg, rgba(11,108,255,0.95), rgba(11,108,255,0.22));
-}
-
-.project-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 42px rgba(14, 30, 54, 0.11);
-  border-color: #c8d5e6;
-}
-
-footer {
-  text-align: center;
-  padding: 1.15rem 1rem;
-  background: linear-gradient(180deg, #eef4fb 0%, #eaf0f6 100%);
-  font-size: 0.9rem;
-  color: #455466;
-}
-
-/* --- Reusable buttons & utility styles for project pages --- */
+/* ─── Buttons ─────────────────────────────────────────────── */
 .btn, .btn-outline {
-  display: inline-block;
-  padding: 0.65rem 1rem;
-  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 0.9rem;
+  font-family: "IBM Plex Mono", monospace;
   font-weight: 600;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   text-decoration: none;
-  margin-right: 0.5rem;
-  margin-top: 0.25rem;
-  font-size: 0.9rem;
-  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, color 0.18s ease;
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-radius: 0;
+  line-height: 1.3;
+  transition:
+    background    130ms var(--ease-out),
+    border-color  130ms var(--ease-out),
+    color         130ms var(--ease-out),
+    transform     240ms var(--ease-spring);
+}
+
+.btn:focus-visible,
+.btn-outline:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .btn {
-  background: linear-gradient(135deg, var(--accent) 0%, #0b7dff 100%);
+  background: var(--accent);
   color: #fff;
-  box-shadow: 0 10px 22px rgba(11, 108, 255, 0.18);
-}
-
-.btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 14px 26px rgba(11, 108, 255, 0.22);
+  border-color: var(--accent);
 }
 
 .btn-outline {
-  border: 1px solid rgba(11, 108, 255, 0.28);
-  color: var(--accent-dark);
-  background: rgba(11, 108, 255, 0.04);
+  border-color: var(--border-bright);
+  color: var(--text);
+  background: transparent;
 }
 
-.btn-outline:hover {
-  transform: translateY(-1px);
-  background: rgba(11, 108, 255, 0.1);
-  border-color: rgba(11, 108, 255, 0.4);
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover {
+    background: transparent;
+    color: var(--accent);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+  .btn-outline:hover {
+    border-color: var(--text);
+    color: var(--text);
+    transform: translateY(-2px);
+  }
 }
 
+.btn:active         { transform: scale(0.97); transition-duration: 65ms; }
+.btn-outline:active { transform: scale(0.97); transition-duration: 65ms; }
+
+/* ─── Project Cards ───────────────────────────────────────── */
+/*
+ * Cards start invisible; ProjectCard wires useInView and adds .card--in
+ * on viewport entry. animation-fill-mode: both holds the final keyframe.
+ */
+.project-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  position: relative;
+  padding: 1.25rem 1.3rem 1.15rem;
+  opacity: 0;
+  counter-increment: proj;
+  transition:
+    border-color  170ms var(--ease-out),
+    transform     280ms var(--ease-spring);
+}
+
+/* Top accent line — neutral, so accent red stays reserved for headers/CTAs/status */
+.project-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--border-bright);
+}
+
+/* Auto project ID */
+.project-card::after {
+  content: 'P' counter(proj, decimal-leading-zero);
+  position: absolute;
+  top: 0.65rem;
+  right: 0.8rem;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.60rem;
+  letter-spacing: 0.14em;
+  color: var(--border-bright);
+  text-transform: uppercase;
+}
+
+.project-card.card--in {
+  animation: fade-up 370ms var(--ease-out) var(--delay, 0ms) both;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .project-card.card--in:hover {
+    border-color: var(--border-bright);
+    transform: translateY(-4px);
+    will-change: transform;
+  }
+}
+
+.project-card.card--in:active {
+  transform: scale(0.99);
+  transition-duration: 65ms;
+}
+
+.project-card h3 {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 0.5rem;
+  letter-spacing: 0.01em;
+  padding-right: 3.5rem;
+}
+
+.project-card > p {
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.65;
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.02em;
+}
+
+/* ─── Featured grid ───────────────────────────────────────── */
+.featured-grid {
+  display: grid;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  grid-template-columns: 1fr;
+  margin-top: 1.15rem;
+  counter-reset: proj;
+}
+
+.featured-grid .project-card {
+  border: none;
+  padding: 1.5rem 1.55rem 1.35rem;
+}
+
+.featured-grid .project-card h3 { font-size: 0.9rem; }
+
+.section-cta { margin-top: 1.5rem; }
+
+/* ─── Project links ───────────────────────────────────────── */
 .project-links {
-  margin-top: 0.8rem;
+  margin-top: 0.85rem;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.4rem;
+  align-items: center;
 }
 
-.project-links .btn {
-  margin-right: 0;
-  margin-top: 0;
+/* ─── Tag chips ───────────────────────────────────────────── */
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin: 0 0 0.8rem;
 }
 
-.project-page-footer {
-  margin-top: 0.5rem;
-  margin-bottom: 2rem;
-}
-
-/* Breadcrumbs */
-.breadcrumbs {
-  font-size: 0.9rem;
-  color: #5b6676;
-  margin: 1rem 0 0.5rem;
-}
-.breadcrumbs a { color: #5b6676; text-decoration: none; }
-.breadcrumbs a:hover { color: var(--accent-dark); }
-
-/* Page hero */
-.page-hero {
-  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
-  border-radius: 20px;
-  padding: 1.35rem 1.5rem;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid rgba(214, 224, 236, 0.9);
-  margin-bottom: 1.25rem;
-}
-.page-hero h1 {
-  margin-top: 0;
-  margin-bottom: 0.3rem;
-  font-family: "Fraunces", serif;
-  letter-spacing: -0.03em;
-  color: #101f33;
-}
-.page-hero p {
-  margin: 0;
+.tag-chip {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.65rem;
+  font-weight: 500;
+  padding: 0.12rem 0.42rem;
+  background: transparent;
   color: var(--muted);
-}
-
-/* KPI chips */
-.kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 0.6rem;
-  margin-top: 0.8rem;
-}
-.kpi {
-  background: linear-gradient(180deg, #ffffff 0%, #fafcff 100%);
-  border: 1px solid rgba(214, 224, 236, 0.9);
-  border-radius: 14px;
-  padding: 0.85rem 1rem;
-  box-shadow: 0 1px 0 rgba(255,255,255,0.65) inset;
-}
-.kpi .label {
-  font-size: 0.8rem;
-  color: #6b7381;
+  border: 1px solid var(--border-bright);
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-.kpi .value {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #132338;
 }
 
-/* Card sections (project pages) */
-.card {
-  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
-  border-radius: 18px;
-  padding: 1.1rem 1.25rem;
-  border: 1px solid rgba(214, 224, 236, 0.9);
-  box-shadow: var(--shadow-sm);
-  margin-bottom: 1rem;
+/* ─── Status chip ─────────────────────────────────────────── */
+.status-chip {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.63rem;
+  padding: 0.1rem 0.35rem;
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  font-weight: 600;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-/* LUNA agent-mode highlight: flashes the section/KPI a fact came from */
-.luna-highlight {
-  transition: box-shadow 0.3s ease, border-color 0.3s ease;
-  border-color: var(--accent) !important;
-  box-shadow: 0 0 0 3px var(--accent-soft) !important;
-}
-.card h3 {
-  margin-top: 0;
-  margin-bottom: 0.65rem;
-  color: #132338;
-  font-family: "Fraunces", serif;
-  letter-spacing: -0.02em;
-}
-
-/* Markdown content rendered inside project cards (react-markdown output) —
-   the global `* { margin: 0 }` reset strips default paragraph/list spacing,
-   so it has to be restored explicitly here. */
-.card p {
-  margin: 0 0 0.75rem;
-  color: #2e3a4d;
-}
-.card ul,
-.card ol {
-  margin: 0 0 0.75rem;
-  padding-left: 1.3rem;
-}
-.card li {
-  margin-bottom: 0.4rem;
-  color: #2e3a4d;
-}
-.card li:last-child {
-  margin-bottom: 0;
-}
-.card strong {
-  color: #12243d;
-}
-.card > :last-child {
-  margin-bottom: 0;
-}
-
-.meta-list {
-  list-style: none;
-  padding-left: 0;
-  margin: 0.4rem 0 0;
-}
-.meta-list li { margin: 0.2rem 0; color: #4f5e70; }
-
-.container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 0 1rem;
-}
-
-/* Filter bar */
-.filter-bar {
-  margin: 1rem 0 0.75rem;
-}
-
+/* ─── Filter bar ──────────────────────────────────────────── */
 .filter-panel {
-  background: linear-gradient(180deg, #ffffff 0%, #fafcff 100%);
-  border: 1px solid rgba(214, 224, 236, 0.95);
-  border-radius: 20px;
-  padding: 1rem;
-  box-shadow: var(--shadow-sm);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  padding: 1rem 1.2rem;
 }
 
 .filter-panel-header {
@@ -434,62 +512,99 @@ footer {
 }
 
 .filter-label {
-  font-size: 0.95rem;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.68rem;
   font-weight: 700;
-  color: #18304f;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text);
 }
 
 .filter-hint {
   margin: 0;
   color: var(--muted);
-  font-size: 0.9rem;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
 }
 
 .filter-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.8rem;
+  gap: 0.75rem;
   margin-top: 0.85rem;
 }
 
 .filter-field {
   display: grid;
-  gap: 0.35rem;
-  font-size: 0.85rem;
-  color: #324861;
+  gap: 0.3rem;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.68rem;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
-.filter-field span {
-  font-weight: 600;
-}
+.filter-field span { font-weight: 700; color: var(--text); }
 
 .filter-field select {
   width: 100%;
-  border: 1px solid var(--border);
-  background: #fff;
+  border: 1px solid var(--border-bright);
+  background: var(--bg-raised);
   color: var(--text);
-  border-radius: 12px;
-  padding: 0.7rem 0.8rem;
-  font: inherit;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  padding: 0.5rem 0.65rem;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.78rem;
+  appearance: none;
+  cursor: pointer;
+  transition: border-color 120ms ease;
 }
 
 .filter-field select:focus {
-  outline: 2px solid rgba(0, 119, 255, 0.22);
+  outline: 1px solid var(--accent);
   border-color: var(--accent);
 }
 
+.filter-actions {
+  margin-top: 0.75rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.filter-reset {
+  border: 1px solid var(--border-bright);
+  background: transparent;
+  color: var(--muted);
+  padding: 0.38rem 0.75rem;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    color         120ms var(--ease-out),
+    border-color  120ms var(--ease-out),
+    transform     120ms var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .filter-reset:hover { color: var(--text); border-color: var(--text); }
+}
+
+.filter-reset:active { transform: scale(0.97); transition-duration: 65ms; }
+
+/* ─── Project groups ──────────────────────────────────────── */
 .project-group {
-  background: rgba(255, 255, 255, 0.74);
-  border: 1px solid rgba(214, 224, 236, 0.9);
-  border-radius: 22px;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  box-shadow: var(--shadow-sm);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  padding: 1.1rem 1.2rem;
+  margin-bottom: 1px;
 }
 
 .project-group--planned {
-  background: linear-gradient(180deg, rgba(241, 246, 255, 0.98), rgba(248, 251, 255, 0.96));
+  background: var(--bg);
+  border-style: dashed;
 }
 
 .project-group-header {
@@ -498,267 +613,480 @@ footer {
   align-items: flex-start;
   gap: 1rem;
   flex-wrap: wrap;
-  margin-bottom: 0.9rem;
+  margin-bottom: 1rem;
 }
 
 .project-group-header h3 {
-  margin: 0;
-  color: #14233b;
-  font-family: "Fraunces", serif;
-  letter-spacing: -0.02em;
+  margin: 0 0 0.2rem;
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
 }
 
 .project-group-header p {
-  margin: 0.2rem 0 0;
+  margin: 0;
   color: var(--muted);
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  font-weight: 400;
 }
 
 .project-group-pill {
   display: inline-flex;
   align-items: center;
-  border-radius: 999px;
-  padding: 0.4rem 0.75rem;
-  background: #fff;
-  color: #18304f;
-  border: 1px solid var(--border);
-  font-size: 0.82rem;
-  font-weight: 700;
-}
-
-.project-group .project-card {
-  margin: 0;
-}
-
-.filter-actions {
-  margin-top: 0.8rem;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.filter-reset {
-  border: 1px solid rgba(11, 108, 255, 0.16);
-  background: linear-gradient(135deg, rgba(11, 108, 255, 0.08), rgba(11, 108, 255, 0.03));
-  color: #324861;
-  border-radius: 999px;
-  padding: 0.55rem 0.85rem;
-  font: inherit;
+  padding: 0.25rem 0.5rem;
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border-bright);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.65rem;
   font-weight: 600;
-  cursor: pointer;
-}
-
-.filter-reset:hover {
-  background: rgba(11, 108, 255, 0.12);
-  border-color: rgba(11, 108, 255, 0.24);
-}
-
-/* Projects count */
-.projects-count {
-  font-size: 0.9rem;
-  color: #4c596b;
-  margin: 0.2rem 0 1rem;
-  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .project-group-body {
   display: grid;
-  gap: 1rem;
+  gap: 1px;
+  background: var(--border);
+  counter-reset: proj;
 }
 
-/* Tag chips inside project cards */
-.tag-list {
+/* Inside a group, cards use gap:1px for dividers — no need for own border */
+.project-group-body .project-card { border: none; }
+
+/* ─── Projects count ──────────────────────────────────────── */
+.projects-count {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0.5rem 0 1rem;
+}
+
+/* ─── Page hero ───────────────────────────────────────────── */
+.page-hero {
+  padding: 2.5rem 0 1.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.page-hero h1 {
+  font-family: "Archivo Black", sans-serif;
+  font-size: clamp(2rem, 6vw, 4rem);
+  letter-spacing: -0.03em;
+  line-height: 0.9;
+  color: var(--text);
+  margin: 0 0 0.7rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  animation: fade-up 480ms var(--ease-out) both;
+}
+
+.page-hero p {
+  margin: 0;
+  color: var(--muted);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.875rem;
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+  animation: fade-up 450ms var(--ease-out) 50ms both;
+}
+
+/* ─── Breadcrumbs ─────────────────────────────────────────── */
+.breadcrumbs {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 1.5rem 0 0;
+  animation: fade-in 350ms var(--ease-out) both;
+}
+.breadcrumbs a {
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 120ms ease;
+}
+.breadcrumbs a:hover { color: var(--accent); }
+
+/* ─── KPI grid ────────────────────────────────────────────── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin-top: 1rem;
+}
+
+.kpi {
+  background: var(--bg-surface);
+  padding: 0.9rem 1rem;
+  transition: background 140ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .kpi:hover { background: var(--bg-raised); }
+}
+
+.kpi .label {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.65rem;
+  color: var(--muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.kpi .value {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-top: 0.2rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── Cards (project detail sections) ────────────────────── */
+/*
+ * Same reveal pattern as project cards. ProjectPage wires useInView
+ * per RevealCard and adds .card--in on scroll entry.
+ */
+.card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--border-bright);
+  padding: 1.25rem 1.4rem;
+  margin-bottom: 1px;
+  opacity: 0;
+}
+
+.card.card--in {
+  animation: fade-up 370ms var(--ease-out) var(--delay, 0ms) both;
+}
+
+.luna-highlight {
+  transition: border-left-color 0.3s ease, box-shadow 0.3s ease;
+  border-left-color: var(--accent) !important;
+  box-shadow: 0 0 0 1px rgba(230, 25, 25, 0.15) !important;
+}
+
+.card h3 {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--text);
+  margin: 0 0 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.card-index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.65rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ─── Section jump nav ────────────────────────────────────── */
+.section-jumpnav {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.3rem;
-  margin: 0.4rem 0 0.4rem;
+  gap: 0.35rem;
+  margin-bottom: 1.25rem;
 }
 
-.tag-chip {
-  font-size: 0.75rem;
-  padding: 0.18rem 0.55rem;
-  border-radius: 999px;
-  background: linear-gradient(180deg, #eef4ff 0%, #e8f0ff 100%);
-  color: #2d3b52;
-  border: 1px solid rgba(11, 108, 255, 0.08);
-}
-
-#contact {
-  text-align: center;
-}
-
-#contact h2::after {
-  margin-left: auto;
-  margin-right: auto;
-}
-
-#contact .contact-grid {
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.contact-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(110px, 1fr));
-  gap: 1.25rem;
-  max-width: 560px;
-  margin: 0.5rem auto 0;
-}
-
-.contact-item {
-  display: grid;
-  justify-items: center;
-  gap: 0.45rem;
-  color: var(--accent-dark);
+.section-jumpnav a {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
   text-decoration: none;
-  font-weight: 700;
+  padding: 0.3rem 0.55rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-bright);
+  transition:
+    color         120ms var(--ease-out),
+    border-color  120ms ease;
 }
 
-.contact-icon {
-  width: 52px;
-  height: 52px;
-  object-fit: contain;
+.section-jumpnav a::before { content: '[ '; }
+.section-jumpnav a::after  { content: ' ]'; }
+
+@media (hover: hover) and (pointer: fine) {
+  .section-jumpnav a:hover { color: var(--text); border-color: var(--text); }
 }
 
-.contact-item:hover {
-  text-decoration: underline;
+/* Card markdown content */
+.card p        { margin: 0 0 0.7rem; color: var(--muted); font-size: 0.875rem; letter-spacing: 0.02em; line-height: 1.75; }
+.card ul,
+.card ol       { margin: 0 0 0.7rem; padding-left: 1.3rem; }
+.card li       { margin-bottom: 0.35rem; color: var(--muted); font-size: 0.875rem; letter-spacing: 0.02em; }
+.card li:last-child { margin-bottom: 0; }
+.card strong   { color: var(--text); font-weight: 700; }
+.card code     {
+  font-family: "IBM Plex Mono", monospace;
+  background: var(--bg-raised);
+  padding: 0.1rem 0.35rem;
+  font-size: 0.85em;
+  color: var(--accent);
+}
+.card > :last-child { margin-bottom: 0; }
+
+/* ─── Project page footer ─────────────────────────────────── */
+.project-page-footer { margin-top: 0.75rem; margin-bottom: 2rem; }
+
+/* ─── About section ───────────────────────────────────────── */
+.about-section > h2,
+.about-section > p {
+  opacity: 0;
 }
 
-/* Featured projects (hub page) */
-.featured-grid {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: 1fr;
-  margin-top: 1rem;
+.about-section.section--in > h2 {
+  animation: fade-up 560ms var(--ease-out) both;
 }
 
-.featured-grid .project-card {
-  padding: 1.5rem 1.7rem 1.6rem;
+.about-section.section--in > p:nth-of-type(1) { animation: fade-up 520ms var(--ease-out)  60ms both; }
+.about-section.section--in > p:nth-of-type(2) { animation: fade-up 520ms var(--ease-out) 120ms both; }
+.about-section.section--in > p:nth-of-type(3) { animation: fade-up 520ms var(--ease-out) 180ms both; }
+.about-section.section--in > p:nth-of-type(n+4) { animation: fade-up 520ms var(--ease-out) 220ms both; }
+
+#about p {
+  color: var(--muted);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.875rem;
+  line-height: 1.8;
+  margin-bottom: 0.9rem;
+  letter-spacing: 0.02em;
+  text-wrap: pretty;
 }
 
-.featured-grid .project-card::before {
-  width: 0.45rem;
-  background: linear-gradient(180deg, var(--accent), rgba(18, 196, 190, 0.5));
-}
-
-.featured-grid .project-card h3 {
-  font-family: "Fraunces", serif;
-  font-size: 1.15rem;
-  letter-spacing: -0.02em;
-  color: #0f1f35;
-  margin-top: 0;
-}
-
-.section-cta {
-  margin-top: 1.5rem;
-  text-align: center;
-}
-
-/* Certifications */
+/* ─── Certifications ──────────────────────────────────────── */
 .cert-list {
   display: grid;
-  gap: 0.75rem;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
   margin-top: 1rem;
 }
 
+/*
+ * Container-level observer: useInView watches .cert-list, then
+ * .card--in on the list triggers CSS nth-child stagger on children.
+ */
+.cert-list .cert-item { opacity: 0; }
+
+.cert-list.card--in .cert-item { animation: fade-up 340ms var(--ease-out) both; }
+.cert-list.card--in .cert-item:nth-child(1) { animation-delay:   0ms; }
+.cert-list.card--in .cert-item:nth-child(2) { animation-delay:  55ms; }
+.cert-list.card--in .cert-item:nth-child(3) { animation-delay: 110ms; }
+.cert-list.card--in .cert-item:nth-child(4) { animation-delay: 165ms; }
+.cert-list.card--in .cert-item:nth-child(n+5) { animation-delay: 200ms; }
+
 .cert-item {
-  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
-  border-radius: 16px;
-  padding: 1rem 1.25rem;
-  border: 1px solid rgba(214, 224, 236, 0.9);
-  box-shadow: var(--shadow-sm);
+  background: var(--bg-surface);
+  padding: 1rem 1.2rem;
+  transition: background 140ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .cert-list.card--in .cert-item:hover { background: var(--bg-raised); }
 }
 
 .cert-header {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.6rem;
   flex-wrap: wrap;
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.35rem;
 }
 
 .cert-name {
+  font-family: "IBM Plex Mono", monospace;
   font-weight: 700;
-  color: #132338;
-  font-size: 1rem;
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
+  color: var(--text);
 }
 
 .cert-badge {
-  font-size: 0.75rem;
-  padding: 0.2rem 0.6rem;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #e8f7ee, #d4f0e0);
-  color: #1a6b3a;
-  border: 1px solid rgba(26, 107, 58, 0.15);
-  font-weight: 700;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.64rem;
+  padding: 0.1rem 0.4rem;
+  background: transparent;
+  color: var(--green);
+  border: 1px solid var(--green);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 .cert-detail {
-  font-size: 0.9rem;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.78rem;
   color: var(--muted);
+  letter-spacing: 0.02em;
+  line-height: 1.5;
   margin: 0 0 0.75rem;
 }
 
-.status-chip {
-  font-size: 0.7rem;
-  padding: 0.15rem 0.5rem;
-  border-radius: 999px;
-  background: rgba(11, 108, 255, 0.1);
-  color: var(--accent-dark);
-  font-weight: 700;
-  margin-left: 0.5rem;
-  vertical-align: middle;
+/* ─── Contact ─────────────────────────────────────────────── */
+#contact { text-align: left; }
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin: 1.1rem 0 0;
 }
 
+/* Same container-level pattern as cert items */
+.contact-grid .contact-item { opacity: 0; }
+
+.contact-grid.card--in .contact-item { animation: fade-up 340ms var(--ease-out) both; }
+.contact-grid.card--in .contact-item:nth-child(1) { animation-delay:   0ms; }
+.contact-grid.card--in .contact-item:nth-child(2) { animation-delay:  55ms; }
+.contact-grid.card--in .contact-item:nth-child(3) { animation-delay: 110ms; }
+
+.contact-item {
+  display: grid;
+  justify-items: center;
+  gap: 0.5rem;
+  color: var(--muted);
+  text-decoration: none;
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 600;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 1.1rem 0.75rem;
+  background: var(--bg-surface);
+  transition:
+    color       150ms ease,
+    background  150ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .contact-grid.card--in .contact-item:hover {
+    color: var(--accent);
+    background: var(--bg-raised);
+  }
+}
+
+.contact-item:active { transform: scale(0.97); transition-duration: 65ms; }
+
+.contact-icon {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  opacity: 0.55;
+  transition: opacity 150ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .contact-grid.card--in .contact-item:hover .contact-icon {
+    opacity: 0.95;
+  }
+}
+
+/* ─── Meta list ───────────────────────────────────────────── */
+.meta-list { list-style: none; padding-left: 0; margin: 0.4rem 0 0; }
+.meta-list li {
+  margin: 0.2rem 0;
+  color: var(--muted);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+}
+
+/* ─── Footer ──────────────────────────────────────────────── */
+footer {
+  text-align: center;
+  padding: 1rem;
+  border-top: 1px solid var(--border);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: var(--bg);
+}
+
+/* ─── Responsive ──────────────────────────────────────────── */
 @media (max-width: 640px) {
-  header {
-    padding: 1.2rem 0;
+  .header-inner   { padding: 0 1rem; position: relative; }
+  .nav-toggle     { display: inline-flex; }
+
+  .site-nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border);
   }
 
-  header h1 {
-    font-size: 1.7rem;
+  .site-nav.is-open { display: flex; }
+
+  .site-nav a {
+    padding: 0.8rem 1rem;
+    font-size: 0.72rem;
+    border-bottom: 1px solid var(--border);
   }
 
-  nav {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.35rem 0.5rem;
-  }
+  .hero-section   { padding: 3.5rem 1rem 2.5rem; }
+  .hero-headline  { font-size: clamp(1.9rem, 8.5vw, 2.75rem); }
+  .container      { padding: 0 1rem; }
+  .filter-grid    { grid-template-columns: 1fr; }
+  .contact-icon   { width: 28px; height: 28px; }
+  .contact-item   { padding: 0.85rem 0.4rem; }
+  .featured-grid .project-card { padding: 1.25rem 1rem 1.1rem; }
+}
 
-  nav a {
-    margin: 0;
-  }
-
-  .hero {
-    padding: 1.4rem 1.1rem;
-    border-radius: 14px;
+/* ─── Reduced motion ──────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay:    0.01ms !important;
+    transition-duration: 0.01ms !important;
   }
 
   .project-card,
-  .page-hero,
-  .card {
-    padding: 1rem;
-  }
-
-  .filter-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .contact-grid {
-    grid-template-columns: repeat(3, minmax(80px, 1fr));
-    gap: 0.9rem;
-    max-width: 360px;
-  }
-
-  .contact-icon {
-    width: 44px;
-    height: 44px;
-  }
-
-  h2 {
-    font-size: 1.35rem;
-  }
-
-  .hero h2 {
-    font-size: 1.75rem;
+  .project-card.card--in,
+  .card,
+  .card.card--in,
+  .cert-list .cert-item,
+  .cert-list.card--in .cert-item,
+  .contact-grid .contact-item,
+  .contact-grid.card--in .contact-item,
+  .about-section > h2,
+  .about-section > p {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+    filter: none !important;
   }
 }
